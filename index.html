@@ -2,560 +2,104 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>الذكاء الاصطناعي</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الذكاء الاصطناعي - Interactive</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
-        *{box-sizing:border-box;margin:0;padding:0}
-        :root{--bg:#04080F;--surface:#0D1421;--border:#1a2a3a;--accent:#00D4FF;--accent2:#7B2FFF;--accent3:#FF6B35;--gold:#FFD700;--text:#E8F4FD;--muted:#6B8FA8}
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism effect for cards */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Animated background pulse */
+        .glow-bg {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(147, 51, 234, 0.3) 0%, transparent 70%);
+            z-index: -1;
+            animation: float 6s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(20px, 40px); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center p-8">
+
+    <div class="glow-bg" style="top: 10%; left: 10%;"></div>
+    <div class="glow-bg" style="bottom: 10%; right: 10%;"></div>
+
+    <header class="text-center mb-12 animate-fade-in">
+        <h1 class="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-blue-400 mb-4">
+            الذكاء الاصطناعي
+        </h1>
+        <p class="text-xl text-purple-200">يُعد الثورة الصناعية الرابعة</p>
+    </header>
+
+    <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl">
         
-        html,body{
-            width:100%;
-            min-height:100vh;
-            background:var(--bg);
-            color:var(--text);
-            font-family:'Cairo',sans-serif;
-            direction:rtl;
-            overflow-x:hidden;
-            font-size: 18px;
-        }
-
-        .page{display:none;min-height:100vh;flex-direction:column;animation:fadeIn .45s ease}
-        .page.active{display:flex}
-        @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-
-        /* SPLASH SCREEN */
-        #splash{align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden;padding:2rem 1.5rem}
-        .stars{position:absolute;inset:0;pointer-events:none}
-        .star{position:absolute;border-radius:50%;background:#fff;animation:twinkle 3s infinite}
-        @keyframes twinkle{0%,100%{opacity:.15}50%{opacity:.8}}
-
-        .splash-inner{position:relative;z-index:1;width:100%;max-width:500px;margin:0 auto}
-        .ai-icon{width:90px;height:90px;border-radius:22px;border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;margin:0 auto 2rem;background:rgba(0,212,255,.06);animation:pulse 2s infinite}
-        @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,212,255,.3)}50%{box-shadow:0 0 0 16px rgba(0,212,255,0)}}
-        
-        .splash-inner h1{font-size:3rem;font-weight:900;line-height:1.1;margin-bottom:1rem}
-        .splash-inner h1 span{color:var(--accent)}
-        .splash-sub{font-size:1.2rem;color:var(--muted);margin-bottom:3rem}
-        .btn-start{background:linear-gradient(135deg,var(--accent2),var(--accent));color:#fff;border:none;padding:18px 45px;border-radius:50px;font-family:'Cairo',sans-serif;font-size:1.2rem;font-weight:700;cursor:pointer;touch-action:manipulation}
-
-        /* TOP BAR */
-        .top-bar{padding:1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-        .top-bar h2{font-size:1.1rem;font-weight:700;color:var(--accent)}
-        .back-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:8px 18px;border-radius:20px;font-size:0.9rem;cursor:pointer}
-
-        /* MAIN CONTENT */
-        .cards-section{padding:1.5rem}
-        .def-card{background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:2rem;margin-bottom:1.5rem}
-        .card-icon{font-size:3rem;margin-bottom:1rem;display:block}
-        .card-title{font-size:1.4rem;font-weight:900;margin-bottom:0.5rem}
-        .card-body{font-size:1.1rem;color:var(--muted);line-height:1.8}
-
-        /* NAVIGATION GRID */
-        .nav-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;padding:0 1.5rem 2rem}
-        .nav-card{border-radius:20px;padding:1.5rem 1rem;text-align:center;border:1px solid transparent;cursor:pointer}
-        .nc1{background:rgba(0,212,255,0.05); border-color:var(--accent); color:var(--accent)}
-        .nc2{background:rgba(123,47,255,0.05); border-color:var(--accent2); color:var(--accent2)}
-        .nc3{background:rgba(255,107,53,0.05); border-color:var(--accent3); color:var(--accent3)}
-        .nc4{background:rgba(255,215,0,0.05); border-color:var(--gold); color:var(--gold)}
-
-        .sub-page-content{padding:2rem 1.5rem;flex:1}
-        .placeholder{background:var(--surface);border:1px dashed var(--border);border-radius:15px;padding:3rem 1rem;text-align:center;color:var(--muted);line-height:2}
-    </style>
-</head>
-<body>
-
-<div class="page active" id="splash">
-  <div class="stars"></div>
-  <div class="splash-inner">
-    <div class="ai-icon">🤖</div>
-    <h1>الذكاء <span>الاصطناعي</span></h1>
-    <p class="splash-sub">مشروع مدرسي متكامل</p>
-    <button class="btn-start" onclick="goTo('main-page')">ابدأ العرض ←</button>
-  </div>
-</div>
-
-<div class="page" id="main-page">
-  <div class="top-bar"><h2>الذكاء الاصطناعي</h2><button class="back-btn" onclick="goTo('splash')">الرئيسية</button></div>
-  <div class="cards-section">
-    <div class="def-card">
-      <span class="card-icon">🧠</span>
-      <div class="card-title">ما هو الذكاء الاصطناعي؟</div>
-      <div class="card-body">هو محاكاة ذكاء الإنسان بواسطة الأنظمة الحاسوبية لتنفيذ مهام معقدة.</div>
-    </div>
-  </div>
-  <div class="nav-grid">
-    <div class="nav-card nc1" onclick="goTo('page1')"><h3>التاريخ</h3></div>
-    <div class="nav-card nc2" onclick="goTo('page2')"><h3>كيف يعمل</h3></div>
-    <div class="nav-card nc3" onclick="goTo('page3')"><h3>التطبيقات</h3></div>
-    <div class="nav-card nc4" onclick="goTo('page4')"><h3>المستقبل</h3></div>
-  </div>
-</div>
-
-<div class="page" id="page1">
-  <div class="top-bar"><h2>التاريخ</h2><button class="back-btn" onclick="goTo('main-page')">رجوع</button></div>
-  <div class="sub-page-content"><div class="placeholder">تاريخ التقنية منذ عام 1950...</div></div>
-</div>
-
-<div class="page" id="page2">
-  <div class="top-bar"><h2>العمل</h2><button class="back-btn" onclick="goTo('main-page')">رجوع</button></div>
-  <div class="sub-page-content"><div class="placeholder">الخوارزميات ومعالجة البيانات...</div></div>
-</div>
-
-<div class="page" id="page3">
-  <div class="top-bar"><h2>التطبيقات</h2><button class="back-btn" onclick="goTo('main-page')">رجوع</button></div>
-  <div class="sub-page-content"><div class="placeholder">استخداماته في الطب والتعليم...</div></div>
-</div>
-
-<div class="page" id="page4">
-  <div class="top-bar"><h2>المستقبل</h2><button class="back-btn" onclick="goTo('main-page')">رجوع</button></div>
-  <div class="sub-page-content"><div class="placeholder">رؤية 2030 والذكاء الاصطناعي...</div></div>
-</div>
-
-<script>
-function goTo(id){
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  window.scrollTo(0,0);
-}
-// Simple star effect
-const stars = document.querySelector('.stars');
-for(let i=0; i<30; i++) {
-    const star = document.createElement('div');
-    star.className = 'star';
-    star.style.width = star.style.height = Math.random() * 3 + 'px';
-    star.style.top = Math.random() * 100 + '%';
-    star.style.left = Math.random() * 100 + '%';
-    stars.appendChild(star);
-}
-</script>
-</body>
-</html>        .sub-page-content{padding:1.5rem;flex:1}
-        .placeholder{background:var(--surface);border:1px dashed var(--border);border-radius:12px;padding:2rem;text-align:center;color:var(--muted);margin-top:1rem;line-height:2}
-
-        @media(min-width:1000px){
-            .page{max-width:800px;margin:0 auto}
-        }
-    </style>
-</head>
-<body>
-
-<div class="page active" id="main-page">
-    <div class="top-bar"><h2>الذكاء الاصطناعي</h2></div>
-    <div class="cards-section">
-        <div class="def-card">
-            <div class="card-icon">🤖</div>
-            <div class="card-title">مرحباً بك</div>
-            <div class="card-body">تم تحديث التصميم ليكون أكبر وأوضح على الجوال. اختر قسماً من الأسفل لبدء العرض.</div>
+        <div class="glass-card p-6">
+            <h3 class="text-2xl font-bold mb-4 text-blue-300">تعريف الذكاء الاصطناعي</h3>
+            <p class="text-sm leading-relaxed">
+                هو فرع من فروع علوم الحاسوب يهدف إلى بناء أنظمة وبرامج قادرة على محاكاة القدرات الذهنية البشرية وأنماط عملها.
+            </p>
         </div>
-    </div>
-    <div class="nav-grid">
-        <div class="nav-card nc1" onclick="goTo('page1')"><div class="nav-icon">📖</div><h3>التاريخ</h3></div>
-        <div class="nav-card nc2" onclick="goTo('page2')"><div class="nav-icon">⚙️</div><h3>العمل</h3></div>
-        <div class="nav-card nc3" onclick="goTo('page3')"><div class="nav-icon">🌍</div><h3>التطبيقات</h3></div>
-        <div class="nav-card nc4" onclick="goTo('page4')"><div class="nav-icon">🔮</div><h3>المستقبل</h3></div>
-    </div>
-</div>
 
-<div class="page" id="page1">
-    <div class="top-bar"><h2>تاريخ التقنية</h2><button class="back-btn" onclick="goTo('main-page')">رجوع</button></div>
-    <div class="sub-page-content">
-        <div class="def-card">
-            <div class="card-title">البداية</div>
-            <div class="card-body">بدأ الذكاء الاصطناعي كفكرة في منتصف القرن العشرين، وتطور حتى أصبح جزءاً من حياتنا اليومية.</div>
+        <div class="glass-card p-6">
+            <h3 class="text-2xl font-bold mb-4 text-blue-300">مستقبل الذكاء الاصطناعي</h3>
+            <p class="text-sm leading-relaxed">
+                يتجه المستقبل نحو اندماج أكبر بين الإنسان والآلة، وزيادة في دقة الترجمة الفورية لتلغي حواجز اللغة تماماً.
+            </p>
         </div>
-    </div>
-</div>
 
-<script>
-    function goTo(id){
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        var target = document.getElementById(id);
-        if(target) {
-            target.classList.add('active');
-            window.scrollTo(0,0);
-        }
-    }
-</script>
-
-</body>
-</html>        .nc4{background:linear-gradient(135deg,#1a1500,#2a2000);border-color:#3a3000;color:var(--gold)}
-
-        .sub-page-content{padding:1.5rem;flex:1}
-        .placeholder{background:var(--surface);border:1px dashed var(--border);border-radius:12px;padding:2rem;text-align:center;color:var(--muted);margin-top:1rem;line-height:2}
-
-        @media(min-width:1000px){
-            .page{max-width:800px;margin:0 auto}
-        }
-    </style>
-</head>
-<body>
-
-<div class="page active" id="main-page">
-    <div class="top-bar"><h2>الذكاء الاصطناعي</h2></div>
-    <div class="cards-section">
-        <div class="def-card">
-            <div class="card-icon">🤖</div>
-            <div class="card-title">مرحباً بك</div>
-            <div class="card-body">هذا البحث مصمم خصيصاً ليعمل بشكل ممتاز على هاتفك. استخدم الأزرار بالأسفل للتنقل.</div>
+        <div class="glass-card p-6">
+            <h3 class="text-2xl font-bold mb-4 text-blue-300">تعلم الآلة</h3>
+            <p class="text-sm leading-relaxed">
+                هو العلم الذي يسمح للحواسيب بالتعلم من البيانات دون برمجة صريحة لكل خطوة.
+            </p>
         </div>
-    </div>
-    <div class="nav-grid">
-        <div class="nav-card nc1" onclick="goTo('page1')"><div class="nav-icon">📖</div><h3>التاريخ</h3></div>
-        <div class="nav-card nc2" onclick="goTo('page2')"><div class="nav-icon">⚙️</div><h3>العمل</h3></div>
-        <div class="nav-card nc3" onclick="goTo('page3')"><div class="nav-icon">🌍</div><h3>التطبيقات</h3></div>
-        <div class="nav-card nc4" onclick="goTo('page4')"><div class="nav-icon">🔮</div><h3>المستقبل</h3></div>
-    </div>
-</div>
 
-<div class="page" id="page1">
-    <div class="top-bar"><h2>تاريخ التقنية</h2><button class="back-btn" onclick="goTo('main-page')">رجوع</button></div>
-    <div class="sub-page-content"><div class="placeholder">تاريخ الذكاء الاصطناعي يبدأ من الخمسينات...</div></div>
-</div>
+        <div class="glass-card p-6">
+            <h3 class="text-2xl font-bold mb-4 text-blue-300">الجذور التاريخية</h3>
+            <p class="text-sm leading-relaxed">
+                بدأت في الخمسينيات مع "آلان تورينج" واختباره الشهير، وصولاً إلى عصرنا الحالي المتميز بوفرة البيانات.
+            </p>
+        </div>
+    </main>
 
-<div class="page" id="page2">
-    <div class="top-bar"><h2>كيف يعمل؟</h2><button class="back-btn" onclick="goTo('main-page')">رجوع</button></div>
-    <div class="sub-page-content"><div class="placeholder">يعتمد على الخوارزميات والبيانات الضخمة...</div></div>
-</div>
-
-<div class="page" id="page3">
-    <div class="top-bar"><h2>التطبيقات</h2><button class="back-btn" onclick="goTo('main-page')">رجوع</button></div>
-    <div class="sub-page-content"><div class="placeholder">يستخدم في الطب، السيارات، والبحث...</div></div>
-</div>
-
-<div class="page" id="page4">
-    <div class="top-bar"><h2>المستقبل</h2><button class="back-btn" onclick="goTo('main-page')">رجوع</button></div>
-    <div class="sub-page-content"><div class="placeholder">رؤية المستقبل والذكاء الفائق...</div></div>
-</div>
-
-<script>
-    function goTo(id){
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        window.scrollTo(0,0);
-    }
-</script>
+    <nav class="mt-16 flex flex-wrap justify-center gap-4">
+        <button class="px-8 py-3 bg-blue-600 hover:bg-blue-500 rounded-full font-bold transition-all transform hover:scale-110 shadow-lg">
+            أنواع الذكاء الاصطناعي
+        </button>
+        <button class="px-8 py-3 bg-blue-600 hover:bg-blue-500 rounded-full font-bold transition-all transform hover:scale-110 shadow-lg">
+            تطبيقات الذكاء الاصطناعي
+        </button>
+        <button class="px-8 py-3 bg-blue-600 hover:bg-blue-500 rounded-full font-bold transition-all transform hover:scale-110 shadow-lg">
+            الذكاء الاصطناعي التوليدي
+        </button>
+        <button class="px-8 py-3 bg-blue-600 hover:bg-blue-500 rounded-full font-bold transition-all transform hover:scale-110 shadow-lg">
+            مستقبل الذكاء الاصطناعي
+        </button>
+    </nav>
 
 </body>
-</html>        .nc2{background:rgba(123,47,255,0.1); border-color:var(--accent2); color:var(--accent2)}
-        .nc3{background:rgba(255,107,53,0.1); border-color:var(--accent3); color:var(--accent3)}
-        .nc4{background:rgba(255,215,0,0.1); border-color:var(--gold); color:var(--gold)}
-
-        /* CONTENT PAGES */
-        .sub-page-content{padding:2rem 1.5rem;flex:1}
-        .placeholder{background:var(--surface);border:1px dashed var(--border);border-radius:15px;padding:3rem 1rem;text-align:center;color:var(--muted);margin-top:1.5rem;line-height:2}
-    </style>
-</head>
-<body>
-
-<div class="page active" id="splash">
-  <div class="stars"></div>
-  <div class="splash-inner">
-    <div class="ai-icon">
-        <svg width="50" height="50" viewBox="0 0 54 54" fill="none"><rect x="14" y="14" width="26" height="26" rx="4" stroke="#00D4FF" stroke-width="2"/></svg>
-    </div>
-    <h1>الذكاء <span>الاصطناعي</span></h1>
-    <p class="splash-sub">بحث مدرسي — استكشف المستقبل</p>
-    <button class="btn-start" onclick="goTo('main-page')">ابدأ الرحلة ←</button>
-  </div>
-</div>
-
-<div class="page" id="main-page">
-  <div class="top-bar">
-    <h2>الذكاء الاصطناعي</h2>
-    <button class="back-btn" onclick="goTo('splash')">← الرئيسية</button>
-  </div>
-  <div class="hero-strip">
-    <h1>ما هو <em>الذكاء الاصطناعي؟</em></h1>
-  </div>
-  <div class="cards-section">
-    <div class="cards-grid">
-      <div class="def-card">
-        <span class="card-icon">🤖</span>
-        <div class="card-title">التعريف العام</div>
-        <div class="card-body">الذكاء الاصطناعي هو علم يهدف إلى بناء أنظمة حاسوبية قادرة على محاكاة الذكاء البشري.</div>
-      </div>
-      <div class="def-card">
-        <span class="card-icon">🧠</span>
-        <div class="card-title">التعلم الآلي</div>
-        <div class="card-body">فرع يتيح للآلات التعلم من البيانات وتحسين أدائها تلقائياً.</div>
-      </div>
-    </div>
-  </div>
-  <div class="nav-section">
-    <div class="nav-grid">
-      <div class="nav-card nc1" onclick="goTo('page1')"><div class="nav-icon">📖</div><h3>التاريخ</h3></div>
-      <div class="nav-card nc2" onclick="goTo('page2')"><div class="nav-icon">⚙️</div><h3>العمل</h3></div>
-      <div class="nav-card nc3" onclick="goTo('page3')"><div class="nav-icon">🌍</div><h3>التطبيقات</h3></div>
-      <div class="nav-card nc4" onclick="goTo('page4')"><div class="nav-icon">🔮</div><h3>المستقبل</h3></div>
-    </div>
-  </div>
-</div>
-
-<div class="page" id="page1">
-  <div class="top-bar"><h2>التاريخ</h2><button class="back-btn" onclick="goTo('main-page')">رجوع</button></div>
-  <div class="sub-page-content"><h2>📖 نشأة الذكاء الاصطناعي</h2><div class="placeholder">محتوى التاريخ سيظهر هنا...</div></div>
-</div>
-<div class="page" id="page2">
-  <div class="top-bar"><h2>كيف يعمل؟</h2><button class="back-btn" onclick="goTo('main-page')">رجوع</button></div>
-  <div class="sub-page-content"><h2>⚙️ آلية العمل</h2><div class="placeholder">محتوى آلية العمل سيظهر هنا...</div></div>
-</div>
-<div class="page" id="page3">
-  <div class="top-bar"><h2>التطبيقات</h2><button class="back-btn" onclick="goTo('main-page')">رجوع</button></div>
-  <div class="sub-page-content"><h2>🌍 التطبيقات الواقعية</h2><div class="placeholder">محتوى التطبيقات سيظهر هنا...</div></div>
-</div>
-<div class="page" id="page4">
-  <div class="top-bar"><h2>المستقبل</h2><button class="back-btn" onclick="goTo('main-page')">رجوع</button></div>
-  <div class="sub-page-content"><h2>🔮 ماذا ينتظرنا؟</h2><div class="placeholder">محتوى المستقبل سيظهر هنا...</div></div>
-</div>
-
-<script>
-function makeStar(){
-  var s=document.querySelector('.stars'); if(!s) return;
-  for(var i=0;i<40;i++){
-    var d=document.createElement('div'); d.className='star';
-    var sz=Math.random()*2+1;
-    d.style.cssText='width:'+sz+'px;height:'+sz+'px;top:'+Math.random()*100+'%;left:'+Math.random()*100+'%;animation-delay:'+Math.random()*3+'s';
-    s.appendChild(d);
-  }
-}
-function goTo(id){
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  window.scrollTo(0,0);
-}
-window.onload = makeStar;
-</script>
-</body>
-</html>    }
-
-    /* TOP BAR - Increased height */
-    .top-bar{padding:1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:.5rem}
-    .top-bar h2{font-size:1.2rem;font-weight:700;color:var(--accent)}
-    .back-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:10px 20px;border-radius:25px;font-size:1rem}
-
-    /* CARDS — Larger text and spacing */
-    .cards-section{padding:1.5rem}
-    .def-card{
-        background:var(--surface);
-        border:1px solid var(--border);
-        border-radius:24px;
-        padding:2.2rem 1.8rem;
-        margin-bottom:1.5rem;
-        display:flex;
-        flex-direction:column;
-        gap:1rem
-    }
-    .card-icon{font-size:3.5rem}
-    .card-title{font-size:1.5rem;font-weight:900}
-    .card-body{font-size:1.1rem;color:var(--muted);line-height:1.8}
-
-    /* NAV BUTTONS — Large touch targets */
-    .nav-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;padding:0 1.5rem 2rem}
-    .nav-card{border-radius:20px;padding:1.8rem 1rem;text-align:center;border:1px solid transparent}
-    .nav-card h3{font-size:1.1rem;margin-top:0.5rem}
-
-    @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,212,255,.3)}50%{box-shadow:0 0 0 16px rgba(0,212,255,0)}}
-    </style>
-</head>
-<body>
-
-<script>
-function makeStar(){
-  var s=document.querySelector('.stars');if(!s)return;
-  for(var i=0;i<60;i++){
-    var d=document.createElement('div');d.className='star';
-    var sz=Math.random()*2.5+1;
-    d.style.cssText='width:'+sz+'px;height:'+sz+'px;top:'+Math.random()*100+'%;left:'+Math.random()*100+'%;animation-delay:'+Math.random()*3+'s;animation-duration:'+(2+Math.random()*3)+'s';
-    s.appendChild(d);
-  }
-}
-function goTo(id){
-  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});
-  document.getElementById(id).classList.add('active');
-  window.scrollTo(0,0);
-}
-window.addEventListener('load',function(){makeStar();goTo('splash')});
-</script>
-
-<div class="page active" id="splash">
-  <div class="stars"></div>
-  <div class="splash-inner">
-    <div class="ai-icon">
-      <svg width="60" height="60" viewBox="0 0 54 54" fill="none">
-        <rect x="14" y="14" width="26" height="26" rx="4" stroke="#00D4FF" stroke-width="1.8" fill="rgba(0,212,255,0.08)"/>
-        <circle cx="27" cy="27" r="2.5" fill="#00D4FF"/>
-      </svg>
-    </div>
-    <h1>الذكاء <span>الاصطناعي</span></h1>
-    <p class="splash-sub">بحث مدرسي متكامل</p>
-    <button class="btn-start" onclick="goTo('main-page')">ابدأ العرض ←</button>
-  </div>
-</div>
-
-<div class="page" id="main-page">
-  <div class="top-bar">
-    <h2>الذكاء الاصطناعي</h2>
-    <button class="back-btn" onclick="goTo('splash')">رجوع</button>
-  </div>
-  
-  <div class="cards-section">
-    <div class="def-card">
-      <div class="card-icon">🤖</div>
-      <div class="card-title">ما هو؟</div>
-      <div class="card-body">الذكاء الاصطناعي هو علم يهدف إلى بناء أنظمة حاسوبية قادرة على محاكاة الذكاء البشري.</div>
-    </div>
-    </div>
-
-  <div class="nav-grid">
-      <div class="nav-card nc1" onclick="goTo('page1')"><div class="nav-icon">📖</div><h3>التاريخ</h3></div>
-      <div class="nav-card nc2" onclick="goTo('page2')"><div class="nav-icon">⚙️</div><h3>العمل</h3></div>
-      <div class="nav-card nc3" onclick="goTo('page3')"><div class="nav-icon">🌍</div><h3>التطبيقات</h3></div>
-      <div class="nav-card nc4" onclick="goTo('page4')"><div class="nav-icon">🔮</div><h3>المستقبل</h3></div>
-  </div>
-</div>
-
-</body>
-</html>.nav-card h3{font-size:clamp(.88rem,2.2vw,.95rem);font-weight:700;margin-bottom:.25rem}
-.nav-card p{font-size:clamp(.72rem,1.8vw,.78rem);opacity:.75}
-.nc1{background:linear-gradient(135deg,#0d1f2d,#0a2a3a);border-color:#0a3a4a;color:var(--accent)}
-.nc2{background:linear-gradient(135deg,#160d2d,#1e0a3a);border-color:#2a0a4a;color:var(--accent2)}
-.nc3{background:linear-gradient(135deg,#2d1500,#3a1a00);border-color:#4a2500;color:var(--accent3)}
-.nc4{background:linear-gradient(135deg,#1a1500,#2a2000);border-color:#3a3000;color:var(--gold)}
-.nc1:hover{box-shadow:0 8px 25px rgba(0,212,255,.2)}
-.nc2:hover{box-shadow:0 8px 25px rgba(123,47,255,.2)}
-.nc3:hover{box-shadow:0 8px 25px rgba(255,107,53,.2)}
-.nc4:hover{box-shadow:0 8px 25px rgba(255,215,0,.2)}
-
-.sub-page-content{padding:clamp(1rem,4vw,1.5rem);flex:1}
-.sub-page-content h2{font-size:clamp(1.2rem,3.5vw,1.5rem);font-weight:900;margin-bottom:.5rem}
-.sub-page-content .placeholder{background:var(--surface);border:1px dashed var(--border);border-radius:12px;padding:clamp(1.5rem,5vw,2rem);text-align:center;color:var(--muted);margin-top:1rem;font-size:clamp(.82rem,2vw,.9rem);line-height:2}
-
-@media(min-width:1000px){
-  #main-page .hero-strip,#main-page .cards-section,#main-page .nav-section{max-width:960px;margin-left:auto;margin-right:auto;width:100%}
-}
-</style>
-
-<script>
-function makeStar(){
-  var s=document.querySelector('.stars');if(!s)return;
-  for(var i=0;i<60;i++){
-    var d=document.createElement('div');d.className='star';
-    var sz=Math.random()*2.5+1;
-    d.style.cssText='width:'+sz+'px;height:'+sz+'px;top:'+Math.random()*100+'%;left:'+Math.random()*100+'%;animation-delay:'+Math.random()*3+'s;animation-duration:'+(2+Math.random()*3)+'s';
-    s.appendChild(d);
-  }
-}
-function goTo(id){
-  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});
-  document.getElementById(id).classList.add('active');
-  window.scrollTo(0,0);
-}
-window.addEventListener('load',function(){makeStar();goTo('splash')});
-</script>
-
-<!-- SPLASH -->
-<div class="page active" id="splash">
-  <div class="stars"></div>
-  <div class="splash-glow"></div>
-  <div class="splash-inner">
-    <div class="ai-icon">
-      <svg width="54" height="54" viewBox="0 0 54 54" fill="none">
-        <rect x="14" y="14" width="26" height="26" rx="4" stroke="#00D4FF" stroke-width="1.8" fill="rgba(0,212,255,0.08)"/>
-        <rect x="20" y="20" width="14" height="14" rx="2" stroke="#00D4FF" stroke-width="1.4" fill="rgba(0,212,255,0.15)"/>
-        <line x1="27" y1="20" x2="27" y2="34" stroke="#00D4FF" stroke-width=".7" opacity=".5"/>
-        <line x1="20" y1="27" x2="34" y2="27" stroke="#00D4FF" stroke-width=".7" opacity=".5"/>
-        <line x1="20" y1="14" x2="20" y2="8" stroke="#00D4FF" stroke-width="1.6" stroke-linecap="round"/>
-        <line x1="27" y1="14" x2="27" y2="8" stroke="#00D4FF" stroke-width="1.6" stroke-linecap="round"/>
-        <line x1="34" y1="14" x2="34" y2="8" stroke="#00D4FF" stroke-width="1.6" stroke-linecap="round"/>
-        <line x1="20" y1="40" x2="20" y2="46" stroke="#00D4FF" stroke-width="1.6" stroke-linecap="round"/>
-        <line x1="27" y1="40" x2="27" y2="46" stroke="#00D4FF" stroke-width="1.6" stroke-linecap="round"/>
-        <line x1="34" y1="40" x2="34" y2="46" stroke="#00D4FF" stroke-width="1.6" stroke-linecap="round"/>
-        <line x1="14" y1="20" x2="8" y2="20" stroke="#00D4FF" stroke-width="1.6" stroke-linecap="round"/>
-        <line x1="14" y1="27" x2="8" y2="27" stroke="#00D4FF" stroke-width="1.6" stroke-linecap="round"/>
-        <line x1="14" y1="34" x2="8" y2="34" stroke="#00D4FF" stroke-width="1.6" stroke-linecap="round"/>
-        <line x1="40" y1="20" x2="46" y2="20" stroke="#00D4FF" stroke-width="1.6" stroke-linecap="round"/>
-        <line x1="40" y1="27" x2="46" y2="27" stroke="#00D4FF" stroke-width="1.6" stroke-linecap="round"/>
-        <line x1="40" y1="34" x2="46" y2="34" stroke="#00D4FF" stroke-width="1.6" stroke-linecap="round"/>
-        <circle cx="27" cy="27" r="2.5" fill="#00D4FF" opacity=".9"/>
-      </svg>
-    </div>
-    <h1>الذكاء <span>الاصطناعي</span></h1>
-    <p class="splash-sub">بحث مدرسي — اكتشف عالم الذكاء الاصطناعي</p>
-    <button class="btn-start" onclick="goTo('main-page')">ابدأ الرحلة ←</button>
-  </div>
-</div>
-
-<!-- MAIN PAGE -->
-<div class="page" id="main-page">
-  <div class="top-bar">
-    <h2>الذكاء الاصطناعي</h2>
-    <button class="back-btn" onclick="goTo('splash')">← الرئيسية</button>
-  </div>
-  <div class="hero-strip">
-    <h1>ما هو <em>الذكاء الاصطناعي؟</em></h1>
-    <p>تعرّف على المفاهيم الأساسية</p>
-  </div>
-  <div class="cards-section">
-    <div class="cards-label">تعريفات أساسية</div>
-    <div class="cards-grid">
-      <div class="def-card">
-        <div class="card-icon">🤖</div>
-        <div class="card-title">التعريف العام</div>
-        <div class="card-body">الذكاء الاصطناعي هو علم يهدف إلى بناء أنظمة حاسوبية قادرة على محاكاة الذكاء البشري وأداء مهام تتطلب تفكيراً.</div>
-        <div class="card-num">١</div>
-      </div>
-      <div class="def-card">
-        <div class="card-icon">🧠</div>
-        <div class="card-title">التعلم الآلي</div>
-        <div class="card-body">فرع من الذكاء الاصطناعي يتيح للآلات التعلم من البيانات وتحسين أدائها تلقائياً دون برمجة صريحة لكل مهمة.</div>
-        <div class="card-num">٢</div>
-      </div>
-      <div class="def-card">
-        <div class="card-icon">👁️</div>
-        <div class="card-title">الرؤية الحاسوبية</div>
-        <div class="card-body">تمكين الحاسوب من تفسير الصور والفيديو وفهمها تماماً كما يفعل الإنسان، وتُستخدم في التعرف على الوجوه وقيادة السيارات.</div>
-        <div class="card-num">٣</div>
-      </div>
-      <div class="def-card">
-        <div class="card-icon">💬</div>
-        <div class="card-title">معالجة اللغة</div>
-        <div class="card-body">قدرة الآلة على فهم اللغة البشرية والتحدث بها، وهو ما يُمكّن المساعدات الذكية مثل سيري وكلود من الحوار معنا.</div>
-        <div class="card-num">٤</div>
-      </div>
-    </div>
-  </div>
-  <div class="nav-section">
-    <div class="nav-label">استكشف المزيد</div>
-    <div class="nav-grid">
-      <div class="nav-card nc1" onclick="goTo('page1')"><div class="nav-icon">📖</div><h3>التاريخ</h3><p>نشأة الذكاء الاصطناعي وتطوره</p></div>
-      <div class="nav-card nc2" onclick="goTo('page2')"><div class="nav-icon">⚙️</div><h3>كيف يعمل؟</h3><p>آلية عمل الأنظمة الذكية</p></div>
-      <div class="nav-card nc3" onclick="goTo('page3')"><div class="nav-icon">🌍</div><h3>التطبيقات</h3><p>استخدامات الذكاء الاصطناعي</p></div>
-      <div class="nav-card nc4" onclick="goTo('page4')"><div class="nav-icon">🔮</div><h3>المستقبل</h3><p>ماذا ينتظرنا؟</p></div>
-    </div>
-  </div>
-</div>
-
-<!-- PAGE 1 -->
-<div class="page" id="page1">
-  <div class="top-bar"><h2 style="color:var(--accent)">تاريخ الذكاء الاصطناعي</h2><button class="back-btn" onclick="goTo('main-page')">← رجوع</button></div>
-  <div class="sub-page-content"><h2>📖 التاريخ والنشأة</h2><div class="placeholder">🏗️ هذه الصفحة جاهزة لمحتواك<br>أرسل لي النصوص التي تريد إضافتها هنا<br><span style="font-size:.75rem;opacity:.5">سأضيفها بتصميم جميل فوراً</span></div></div>
-</div>
-
-<!-- PAGE 2 -->
-<div class="page" id="page2">
-  <div class="top-bar"><h2 style="color:var(--accent2)">كيف يعمل الذكاء الاصطناعي؟</h2><button class="back-btn" onclick="goTo('main-page')">← رجوع</button></div>
-  <div class="sub-page-content"><h2>⚙️ آلية العمل</h2><div class="placeholder">🏗️ هذه الصفحة جاهزة لمحتواك<br>أرسل لي النصوص التي تريد إضافتها هنا<br><span style="font-size:.75rem;opacity:.5">سأضيفها بتصميم جميل فوراً</span></div></div>
-</div>
-
-<!-- PAGE 3 -->
-<div class="page" id="page3">
-  <div class="top-bar"><h2 style="color:var(--accent3)">تطبيقات الذكاء الاصطناعي</h2><button class="back-btn" onclick="goTo('main-page')">← رجوع</button></div>
-  <div class="sub-page-content"><h2>🌍 التطبيقات الواقعية</h2><div class="placeholder">🏗️ هذه الصفحة جاهزة لمحتواك<br>أرسل لي النصوص التي تريد إضافتها هنا<br><span style="font-size:.75rem;opacity:.5">سأضيفها بتصميم جميل فوراً</span></div></div>
-</div>
-
-<!-- PAGE 4 -->
-<div class="page" id="page4">
-  <div class="top-bar"><h2 style="color:var(--gold)">مستقبل الذكاء الاصطناعي</h2><button class="back-btn" onclick="goTo('main-page')">← رجوع</button></div>
-  <div class="sub-page-content"><h2>🔮 ماذا ينتظرنا؟</h2><div class="placeholder">🏗️ هذه الصفحة جاهزة لمحتواك<br>أرسل لي النصوص التي تريد إضافتها هنا<br><span style="font-size:.75rem;opacity:.5">سأضيفها بتصميم جميل فوراً</span></div></div>
-</div>
+</html>
