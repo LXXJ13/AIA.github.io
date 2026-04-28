@@ -33,53 +33,35 @@ html,body{width:100%;min-height:100%;background:var(--bg);color:var(--text);font
 .hero-strip h1 em{color:var(--accent);font-style:normal}
 .hero-strip p{font-size:clamp(.82rem,2vw,.95rem);color:var(--muted)}
 
-.cards-section{padding:clamp(.8rem,3vw,1rem) clamp(1rem,4vw,1.5rem)}
+.cards-section{padding:clamp(.8rem,3vw,1.2rem) clamp(1rem,4vw,1.5rem)}
 .cards-label{font-size:.72rem;letter-spacing:3px;color:var(--muted);margin-bottom:1rem;text-align:center}
 
-/* MOBILE: single column stack */
-.cards-grid{display:grid;grid-template-columns:1fr;gap:.75rem}
+/* MOBILE: single column */
+.cards-grid{display:grid;grid-template-columns:1fr;gap:1rem}
+@media(min-width:560px){.cards-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:900px){.cards-grid{grid-template-columns:repeat(4,1fr)}}
 
-/* TABLET+: 2 cols */
-@media(min-width:560px){
-  .cards-grid{grid-template-columns:repeat(2,1fr)}
-}
-/* DESKTOP: 4 cols */
-@media(min-width:900px){
-  .cards-grid{grid-template-columns:repeat(4,1fr)}
-}
-
-.def-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:clamp(1rem,3vw,1.25rem);position:relative;overflow:hidden;transition:transform .2s,border-color .2s;display:flex;align-items:flex-start;gap:1rem}
-@media(min-width:560px){
-  .def-card{display:block}
-}
+/* MOBILE card: icon on top, big padding */
+.def-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.6rem 1.4rem;position:relative;overflow:hidden;transition:transform .2s,border-color .2s;display:flex;flex-direction:column;gap:.6rem;min-height:150px}
 .def-card:hover{transform:translateY(-3px);border-color:var(--accent)}
-.def-card::before{content:'';position:absolute;top:0;right:0;width:55px;height:55px;border-radius:0 14px 0 55px;opacity:.12}
+.def-card::before{content:'';position:absolute;top:0;right:0;width:70px;height:70px;border-radius:0 16px 0 70px;opacity:.13}
 .def-card:nth-child(1)::before{background:var(--accent)}
 .def-card:nth-child(2)::before{background:var(--accent2)}
 .def-card:nth-child(3)::before{background:var(--accent3)}
 .def-card:nth-child(4)::before{background:var(--gold)}
-.card-icon{font-size:1.6rem;flex-shrink:0;margin-bottom:0}
-@media(min-width:560px){
-  .card-icon{font-size:1.5rem;margin-bottom:.6rem}
-}
-.card-text{flex:1}
-@media(min-width:560px){
-  .card-text{flex:none}
-}
-.card-title{font-size:clamp(.88rem,2.2vw,.95rem);font-weight:700;margin-bottom:.35rem;color:var(--text)}
-.card-body{font-size:clamp(.78rem,1.8vw,.83rem);color:var(--muted);line-height:1.75}
-.card-num{position:absolute;bottom:.6rem;left:.6rem;font-size:1.8rem;font-weight:900;opacity:.06;color:#fff}
+.card-icon{font-size:2.2rem;line-height:1}
+.card-title{font-size:1.05rem;font-weight:700;color:var(--text)}
+.card-body{font-size:.88rem;color:var(--muted);line-height:1.85}
+.card-num{position:absolute;bottom:.8rem;left:.8rem;font-size:2.4rem;font-weight:900;opacity:.06;color:#fff}
 
 .nav-section{padding:clamp(1rem,4vw,1.5rem)}
 .nav-label{font-size:.72rem;letter-spacing:3px;color:var(--muted);margin-bottom:1rem;text-align:center}
-.nav-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
-@media(min-width:700px){
-  .nav-grid{grid-template-columns:repeat(4,1fr)}
-}
+.nav-grid{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
+@media(min-width:700px){.nav-grid{grid-template-columns:repeat(4,1fr)}}
 .nav-card{border-radius:14px;padding:clamp(1rem,3vw,1.3rem) 1rem;text-align:center;cursor:pointer;border:1px solid transparent;transition:transform .2s,box-shadow .2s;touch-action:manipulation}
 .nav-card:hover{transform:translateY(-4px)}
 .nav-card:active{transform:scale(.97)}
-.nav-card .nav-icon{font-size:clamp(1.5rem,4vw,1.8rem);margin-bottom:.45rem}
+.nav-card .nav-icon{font-size:1.8rem;margin-bottom:.45rem}
 .nav-card h3{font-size:clamp(.88rem,2.2vw,.95rem);font-weight:700;margin-bottom:.25rem}
 .nav-card p{font-size:clamp(.72rem,1.8vw,.78rem);opacity:.75}
 .nc1{background:linear-gradient(135deg,#0d1f2d,#0a2a3a);border-color:#0a3a4a;color:var(--accent)}
@@ -102,11 +84,9 @@ html,body{width:100%;min-height:100%;background:var(--bg);color:var(--text);font
 
 <script>
 function makeStar(){
-  var s=document.querySelector('.stars');
-  if(!s)return;
+  var s=document.querySelector('.stars');if(!s)return;
   for(var i=0;i<60;i++){
-    var d=document.createElement('div');
-    d.className='star';
+    var d=document.createElement('div');d.className='star';
     var sz=Math.random()*2.5+1;
     d.style.cssText='width:'+sz+'px;height:'+sz+'px;top:'+Math.random()*100+'%;left:'+Math.random()*100+'%;animation-delay:'+Math.random()*3+'s;animation-duration:'+(2+Math.random()*3)+'s';
     s.appendChild(d);
@@ -126,7 +106,7 @@ window.addEventListener('load',function(){makeStar();goTo('splash')});
   <div class="splash-glow"></div>
   <div class="splash-inner">
     <div class="ai-icon">
-      <svg width="54" height="54" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <svg width="54" height="54" viewBox="0 0 54 54" fill="none">
         <rect x="14" y="14" width="26" height="26" rx="4" stroke="#00D4FF" stroke-width="1.8" fill="rgba(0,212,255,0.08)"/>
         <rect x="20" y="20" width="14" height="14" rx="2" stroke="#00D4FF" stroke-width="1.4" fill="rgba(0,212,255,0.15)"/>
         <line x1="27" y1="20" x2="27" y2="34" stroke="#00D4FF" stroke-width=".7" opacity=".5"/>
@@ -167,34 +147,26 @@ window.addEventListener('load',function(){makeStar();goTo('splash')});
     <div class="cards-grid">
       <div class="def-card">
         <div class="card-icon">🤖</div>
-        <div class="card-text">
-          <div class="card-title">التعريف العام</div>
-          <div class="card-body">الذكاء الاصطناعي هو علم يهدف إلى بناء أنظمة حاسوبية قادرة على محاكاة الذكاء البشري وأداء مهام تتطلب تفكيراً.</div>
-        </div>
+        <div class="card-title">التعريف العام</div>
+        <div class="card-body">الذكاء الاصطناعي هو علم يهدف إلى بناء أنظمة حاسوبية قادرة على محاكاة الذكاء البشري وأداء مهام تتطلب تفكيراً.</div>
         <div class="card-num">١</div>
       </div>
       <div class="def-card">
         <div class="card-icon">🧠</div>
-        <div class="card-text">
-          <div class="card-title">التعلم الآلي</div>
-          <div class="card-body">فرع من الذكاء الاصطناعي يتيح للآلات التعلم من البيانات وتحسين أدائها تلقائياً دون برمجة صريحة لكل مهمة.</div>
-        </div>
+        <div class="card-title">التعلم الآلي</div>
+        <div class="card-body">فرع من الذكاء الاصطناعي يتيح للآلات التعلم من البيانات وتحسين أدائها تلقائياً دون برمجة صريحة لكل مهمة.</div>
         <div class="card-num">٢</div>
       </div>
       <div class="def-card">
         <div class="card-icon">👁️</div>
-        <div class="card-text">
-          <div class="card-title">الرؤية الحاسوبية</div>
-          <div class="card-body">تمكين الحاسوب من تفسير الصور والفيديو وفهمها تماماً كما يفعل الإنسان، وتُستخدم في التعرف على الوجوه وقيادة السيارات.</div>
-        </div>
+        <div class="card-title">الرؤية الحاسوبية</div>
+        <div class="card-body">تمكين الحاسوب من تفسير الصور والفيديو وفهمها تماماً كما يفعل الإنسان، وتُستخدم في التعرف على الوجوه وقيادة السيارات.</div>
         <div class="card-num">٣</div>
       </div>
       <div class="def-card">
         <div class="card-icon">💬</div>
-        <div class="card-text">
-          <div class="card-title">معالجة اللغة</div>
-          <div class="card-body">قدرة الآلة على فهم اللغة البشرية والتحدث بها، وهو ما يُمكّن المساعدات الذكية مثل سيري وكلود من الحوار معنا.</div>
-        </div>
+        <div class="card-title">معالجة اللغة</div>
+        <div class="card-body">قدرة الآلة على فهم اللغة البشرية والتحدث بها، وهو ما يُمكّن المساعدات الذكية مثل سيري وكلود من الحوار معنا.</div>
         <div class="card-num">٤</div>
       </div>
     </div>
@@ -202,74 +174,34 @@ window.addEventListener('load',function(){makeStar();goTo('splash')});
   <div class="nav-section">
     <div class="nav-label">استكشف المزيد</div>
     <div class="nav-grid">
-      <div class="nav-card nc1" onclick="goTo('page1')">
-        <div class="nav-icon">📖</div>
-        <h3>التاريخ</h3>
-        <p>نشأة الذكاء الاصطناعي وتطوره</p>
-      </div>
-      <div class="nav-card nc2" onclick="goTo('page2')">
-        <div class="nav-icon">⚙️</div>
-        <h3>كيف يعمل؟</h3>
-        <p>آلية عمل الأنظمة الذكية</p>
-      </div>
-      <div class="nav-card nc3" onclick="goTo('page3')">
-        <div class="nav-icon">🌍</div>
-        <h3>التطبيقات</h3>
-        <p>استخدامات الذكاء الاصطناعي</p>
-      </div>
-      <div class="nav-card nc4" onclick="goTo('page4')">
-        <div class="nav-icon">🔮</div>
-        <h3>المستقبل</h3>
-        <p>ماذا ينتظرنا؟</p>
-      </div>
+      <div class="nav-card nc1" onclick="goTo('page1')"><div class="nav-icon">📖</div><h3>التاريخ</h3><p>نشأة الذكاء الاصطناعي وتطوره</p></div>
+      <div class="nav-card nc2" onclick="goTo('page2')"><div class="nav-icon">⚙️</div><h3>كيف يعمل؟</h3><p>آلية عمل الأنظمة الذكية</p></div>
+      <div class="nav-card nc3" onclick="goTo('page3')"><div class="nav-icon">🌍</div><h3>التطبيقات</h3><p>استخدامات الذكاء الاصطناعي</p></div>
+      <div class="nav-card nc4" onclick="goTo('page4')"><div class="nav-icon">🔮</div><h3>المستقبل</h3><p>ماذا ينتظرنا؟</p></div>
     </div>
   </div>
 </div>
 
 <!-- PAGE 1 -->
 <div class="page" id="page1">
-  <div class="top-bar">
-    <h2 style="color:var(--accent)">تاريخ الذكاء الاصطناعي</h2>
-    <button class="back-btn" onclick="goTo('main-page')">← رجوع</button>
-  </div>
-  <div class="sub-page-content">
-    <h2>📖 التاريخ والنشأة</h2>
-    <div class="placeholder">🏗️ هذه الصفحة جاهزة لمحتواك<br>أرسل لي النصوص التي تريد إضافتها هنا<br><span style="font-size:.75rem;opacity:.5">سأضيفها بتصميم جميل فوراً</span></div>
-  </div>
+  <div class="top-bar"><h2 style="color:var(--accent)">تاريخ الذكاء الاصطناعي</h2><button class="back-btn" onclick="goTo('main-page')">← رجوع</button></div>
+  <div class="sub-page-content"><h2>📖 التاريخ والنشأة</h2><div class="placeholder">🏗️ هذه الصفحة جاهزة لمحتواك<br>أرسل لي النصوص التي تريد إضافتها هنا<br><span style="font-size:.75rem;opacity:.5">سأضيفها بتصميم جميل فوراً</span></div></div>
 </div>
 
 <!-- PAGE 2 -->
 <div class="page" id="page2">
-  <div class="top-bar">
-    <h2 style="color:var(--accent2)">كيف يعمل الذكاء الاصطناعي؟</h2>
-    <button class="back-btn" onclick="goTo('main-page')">← رجوع</button>
-  </div>
-  <div class="sub-page-content">
-    <h2>⚙️ آلية العمل</h2>
-    <div class="placeholder">🏗️ هذه الصفحة جاهزة لمحتواك<br>أرسل لي النصوص التي تريد إضافتها هنا<br><span style="font-size:.75rem;opacity:.5">سأضيفها بتصميم جميل فوراً</span></div>
-  </div>
+  <div class="top-bar"><h2 style="color:var(--accent2)">كيف يعمل الذكاء الاصطناعي؟</h2><button class="back-btn" onclick="goTo('main-page')">← رجوع</button></div>
+  <div class="sub-page-content"><h2>⚙️ آلية العمل</h2><div class="placeholder">🏗️ هذه الصفحة جاهزة لمحتواك<br>أرسل لي النصوص التي تريد إضافتها هنا<br><span style="font-size:.75rem;opacity:.5">سأضيفها بتصميم جميل فوراً</span></div></div>
 </div>
 
 <!-- PAGE 3 -->
 <div class="page" id="page3">
-  <div class="top-bar">
-    <h2 style="color:var(--accent3)">تطبيقات الذكاء الاصطناعي</h2>
-    <button class="back-btn" onclick="goTo('main-page')">← رجوع</button>
-  </div>
-  <div class="sub-page-content">
-    <h2>🌍 التطبيقات الواقعية</h2>
-    <div class="placeholder">🏗️ هذه الصفحة جاهزة لمحتواك<br>أرسل لي النصوص التي تريد إضافتها هنا<br><span style="font-size:.75rem;opacity:.5">سأضيفها بتصميم جميل فوراً</span></div>
-  </div>
+  <div class="top-bar"><h2 style="color:var(--accent3)">تطبيقات الذكاء الاصطناعي</h2><button class="back-btn" onclick="goTo('main-page')">← رجوع</button></div>
+  <div class="sub-page-content"><h2>🌍 التطبيقات الواقعية</h2><div class="placeholder">🏗️ هذه الصفحة جاهزة لمحتواك<br>أرسل لي النصوص التي تريد إضافتها هنا<br><span style="font-size:.75rem;opacity:.5">سأضيفها بتصميم جميل فوراً</span></div></div>
 </div>
 
 <!-- PAGE 4 -->
 <div class="page" id="page4">
-  <div class="top-bar">
-    <h2 style="color:var(--gold)">مستقبل الذكاء الاصطناعي</h2>
-    <button class="back-btn" onclick="goTo('main-page')">← رجوع</button>
-  </div>
-  <div class="sub-page-content">
-    <h2>🔮 ماذا ينتظرنا؟</h2>
-    <div class="placeholder">🏗️ هذه الصفحة جاهزة لمحتواك<br>أرسل لي النصوص التي تريد إضافتها هنا<br><span style="font-size:.75rem;opacity:.5">سأضيفها بتصميم جميل فوراً</span></div>
-  </div>
+  <div class="top-bar"><h2 style="color:var(--gold)">مستقبل الذكاء الاصطناعي</h2><button class="back-btn" onclick="goTo('main-page')">← رجوع</button></div>
+  <div class="sub-page-content"><h2>🔮 ماذا ينتظرنا؟</h2><div class="placeholder">🏗️ هذه الصفحة جاهزة لمحتواك<br>أرسل لي النصوص التي تريد إضافتها هنا<br><span style="font-size:.75rem;opacity:.5">سأضيفها بتصميم جميل فوراً</span></div></div>
 </div>
