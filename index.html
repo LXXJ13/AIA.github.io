@@ -1,69 +1,160 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>بحث الذكاء الاصطناعي</title>
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
-    
-    *{box-sizing:border-box;margin:0;padding:0}
-    
-    :root{
-        --bg:#04080F;
-        --surface:#0D1421;
-        --border:#1a2a3a;
-        --accent:#00D4FF;
-        --accent2:#7B2FFF;
-        --accent3:#FF6B35;
-        --gold:#FFD700;
-        --text:#E8F4FD;
-        --muted:#6B8FA8
-    }
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+        *{box-sizing:border-box;margin:0;padding:0}
+        :root{--bg:#04080F;--surface:#0D1421;--border:#1a2a3a;--accent:#00D4FF;--accent2:#7B2FFF;--accent3:#FF6B35;--gold:#FFD700;--text:#E8F4FD;--muted:#6B8FA8}
+        
+        html,body{
+            width:100%;
+            min-height:100%;
+            background:var(--bg);
+            color:var(--text);
+            font-family:'Cairo',sans-serif;
+            direction:rtl;
+            overflow-x:hidden;
+            font-size: 18px; /* Bigger base font for mobile */
+        }
 
-    html,body{
-        width:100%;
-        min-height:100%;
-        background:var(--bg);
-        color:var(--text);
-        font-family: 'Cairo', sans-serif;
-        direction:rtl;
-        overflow-x:hidden;
-        /* Increased base font size for mobile readability */
-        font-size: 18px; 
-    }
+        .page{display:none;min-height:100vh;flex-direction:column;animation:fadeIn .45s ease}
+        .page.active{display:flex}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
-    .page{display:none;min-height:100vh;flex-direction:column;animation:fadeIn .45s ease}
-    .page.active{display:flex}
-    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+        /* SPLASH */
+        #splash{align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden;padding:3rem 1.5rem}
+        .stars{position:absolute;inset:0;pointer-events:none}
+        .star{position:absolute;border-radius:50%;background:#fff;animation:twinkle 3s infinite}
+        @keyframes twinkle{0%,100%{opacity:.15}50%{opacity:.8}}
+        
+        .splash-inner{position:relative;z-index:1;width:100%;max-width:500px;margin:0 auto;padding:1rem}
+        .ai-icon{width:100px;height:100px;border-radius:22px;border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;margin:0 auto 2rem;background:rgba(0,212,255,.06);animation:pulse 2s infinite}
+        @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,212,255,.3)}50%{box-shadow:0 0 0 16px rgba(0,212,255,0)}}
+        
+        .splash-inner h1{font-size:3rem;font-weight:900;line-height:1.2;margin-bottom:.5rem}
+        .splash-inner h1 span{color:var(--accent)}
+        .splash-sub{font-size:1.2rem;color:var(--muted);margin-bottom:3rem}
+        .btn-start{background:linear-gradient(135deg,var(--accent2),var(--accent));color:#fff;border:none;padding:18px 48px;border-radius:50px;font-family:'Cairo',sans-serif;font-size:1.2rem;font-weight:700;cursor:pointer;transition:transform .2s;touch-action:manipulation}
 
-    /* SPLASH - Made elements larger */
-    #splash{align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden;padding:3rem 1.5rem}
-    .stars{position:absolute;inset:0;pointer-events:none}
-    .star{position:absolute;border-radius:50%;background:#fff;animation:twinkle 3s infinite}
-    @keyframes twinkle{0%,100%{opacity:.15}50%{opacity:.8}}
+        /* TOP BAR */
+        .top-bar{padding:1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+        .top-bar h2{font-size:1.1rem;font-weight:700;color:var(--accent)}
+        .back-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:8px 20px;border-radius:20px;font-size:.9rem;cursor:pointer}
 
-    .splash-inner{position:relative;z-index:1;width:100%;max-width:500px;margin:0 auto;padding:1.5rem}
-    .ai-icon{width:110px;height:110px;border-radius:22px;border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;margin:0 auto 2rem;background:rgba(0,212,255,.06);animation:pulse 2s infinite}
-    
-    .splash-inner h1{font-size:3.2rem;font-weight:900;line-height:1.1;margin-bottom:1rem}
-    .splash-inner h1 span{color:var(--accent)}
-    .splash-sub{font-size:1.2rem;color:var(--muted);margin-bottom:3rem}
-    
-    /* Bigger Button for easy tapping */
-    .btn-start{
-        background:linear-gradient(135deg,var(--accent2),var(--accent));
-        color:#fff;
-        border:none;
-        padding:20px 50px;
-        border-radius:50px;
-        font-family:'Cairo',sans-serif;
-        font-size:1.3rem;
-        font-weight:700;
-        cursor:pointer;
-        box-shadow:0 10px 30px rgba(0,212,255,.2);
-        touch-action:manipulation
-    }
+        /* HERO */
+        .hero-strip{padding:2rem 1.5rem;text-align:center}
+        .hero-strip h1{font-size:2rem;font-weight:900;margin-bottom:.5rem}
+        .hero-strip h1 em{color:var(--accent);font-style:normal}
+
+        /* CARDS */
+        .cards-section{padding:1rem 1.5rem}
+        .cards-grid{display:flex;flex-direction:column;gap:1.2rem}
+        .def-card{background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:2rem;position:relative;overflow:hidden}
+        .card-icon{font-size:3rem;margin-bottom:0.5rem;display:block}
+        .card-title{font-size:1.4rem;font-weight:700;margin-bottom:0.5rem;color:var(--text)}
+        .card-body{font-size:1.05rem;color:var(--muted);line-height:1.8}
+
+        /* NAV GRID */
+        .nav-section{padding:2rem 1.5rem}
+        .nav-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+        .nav-card{border-radius:18px;padding:1.5rem 1rem;text-align:center;cursor:pointer;border:1px solid transparent;transition:all 0.2s}
+        .nav-card .nav-icon{font-size:2rem;margin-bottom:.5rem}
+        .nav-card h3{font-size:1rem;font-weight:700}
+        .nc1{background:rgba(0,212,255,0.1); border-color:var(--accent); color:var(--accent)}
+        .nc2{background:rgba(123,47,255,0.1); border-color:var(--accent2); color:var(--accent2)}
+        .nc3{background:rgba(255,107,53,0.1); border-color:var(--accent3); color:var(--accent3)}
+        .nc4{background:rgba(255,215,0,0.1); border-color:var(--gold); color:var(--gold)}
+
+        /* CONTENT PAGES */
+        .sub-page-content{padding:2rem 1.5rem;flex:1}
+        .placeholder{background:var(--surface);border:1px dashed var(--border);border-radius:15px;padding:3rem 1rem;text-align:center;color:var(--muted);margin-top:1.5rem;line-height:2}
+    </style>
+</head>
+<body>
+
+<div class="page active" id="splash">
+  <div class="stars"></div>
+  <div class="splash-inner">
+    <div class="ai-icon">
+        <svg width="50" height="50" viewBox="0 0 54 54" fill="none"><rect x="14" y="14" width="26" height="26" rx="4" stroke="#00D4FF" stroke-width="2"/></svg>
+    </div>
+    <h1>الذكاء <span>الاصطناعي</span></h1>
+    <p class="splash-sub">بحث مدرسي — استكشف المستقبل</p>
+    <button class="btn-start" onclick="goTo('main-page')">ابدأ الرحلة ←</button>
+  </div>
+</div>
+
+<div class="page" id="main-page">
+  <div class="top-bar">
+    <h2>الذكاء الاصطناعي</h2>
+    <button class="back-btn" onclick="goTo('splash')">← الرئيسية</button>
+  </div>
+  <div class="hero-strip">
+    <h1>ما هو <em>الذكاء الاصطناعي؟</em></h1>
+  </div>
+  <div class="cards-section">
+    <div class="cards-grid">
+      <div class="def-card">
+        <span class="card-icon">🤖</span>
+        <div class="card-title">التعريف العام</div>
+        <div class="card-body">الذكاء الاصطناعي هو علم يهدف إلى بناء أنظمة حاسوبية قادرة على محاكاة الذكاء البشري.</div>
+      </div>
+      <div class="def-card">
+        <span class="card-icon">🧠</span>
+        <div class="card-title">التعلم الآلي</div>
+        <div class="card-body">فرع يتيح للآلات التعلم من البيانات وتحسين أدائها تلقائياً.</div>
+      </div>
+    </div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-grid">
+      <div class="nav-card nc1" onclick="goTo('page1')"><div class="nav-icon">📖</div><h3>التاريخ</h3></div>
+      <div class="nav-card nc2" onclick="goTo('page2')"><div class="nav-icon">⚙️</div><h3>العمل</h3></div>
+      <div class="nav-card nc3" onclick="goTo('page3')"><div class="nav-icon">🌍</div><h3>التطبيقات</h3></div>
+      <div class="nav-card nc4" onclick="goTo('page4')"><div class="nav-icon">🔮</div><h3>المستقبل</h3></div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page1">
+  <div class="top-bar"><h2>التاريخ</h2><button class="back-btn" onclick="goTo('main-page')">رجوع</button></div>
+  <div class="sub-page-content"><h2>📖 نشأة الذكاء الاصطناعي</h2><div class="placeholder">محتوى التاريخ سيظهر هنا...</div></div>
+</div>
+<div class="page" id="page2">
+  <div class="top-bar"><h2>كيف يعمل؟</h2><button class="back-btn" onclick="goTo('main-page')">رجوع</button></div>
+  <div class="sub-page-content"><h2>⚙️ آلية العمل</h2><div class="placeholder">محتوى آلية العمل سيظهر هنا...</div></div>
+</div>
+<div class="page" id="page3">
+  <div class="top-bar"><h2>التطبيقات</h2><button class="back-btn" onclick="goTo('main-page')">رجوع</button></div>
+  <div class="sub-page-content"><h2>🌍 التطبيقات الواقعية</h2><div class="placeholder">محتوى التطبيقات سيظهر هنا...</div></div>
+</div>
+<div class="page" id="page4">
+  <div class="top-bar"><h2>المستقبل</h2><button class="back-btn" onclick="goTo('main-page')">رجوع</button></div>
+  <div class="sub-page-content"><h2>🔮 ماذا ينتظرنا؟</h2><div class="placeholder">محتوى المستقبل سيظهر هنا...</div></div>
+</div>
+
+<script>
+function makeStar(){
+  var s=document.querySelector('.stars'); if(!s) return;
+  for(var i=0;i<40;i++){
+    var d=document.createElement('div'); d.className='star';
+    var sz=Math.random()*2+1;
+    d.style.cssText='width:'+sz+'px;height:'+sz+'px;top:'+Math.random()*100+'%;left:'+Math.random()*100+'%;animation-delay:'+Math.random()*3+'s';
+    s.appendChild(d);
+  }
+}
+function goTo(id){
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+window.onload = makeStar;
+</script>
+</body>
+</html>    }
 
     /* TOP BAR - Increased height */
     .top-bar{padding:1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:.5rem}
