@@ -8,7 +8,6 @@ html,body{width:100%;min-height:100%;background:var(--bg);color:var(--text);font
 .page.active{display:flex}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
-/* SPLASH */
 #splash{align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden;padding:2rem 1rem}
 .stars{position:absolute;inset:0;pointer-events:none}
 .star{position:absolute;border-radius:50%;background:#fff;animation:twinkle 3s infinite}
@@ -24,38 +23,59 @@ html,body{width:100%;min-height:100%;background:var(--bg);color:var(--text);font
 .btn-start:hover{transform:scale(1.05);box-shadow:0 8px 30px rgba(0,212,255,.3)}
 .btn-start:active{transform:scale(.97)}
 
-/* NAV BAR */
 .top-bar{padding:clamp(.9rem,3vw,1.3rem) clamp(1rem,4vw,2rem);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-shrink:0}
 .top-bar h2{font-size:clamp(.95rem,2.5vw,1.1rem);font-weight:700;color:var(--accent)}
 .back-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px clamp(10px,2vw,18px);border-radius:20px;font-family:'Cairo',sans-serif;font-size:clamp(.8rem,2vw,.9rem);cursor:pointer;transition:all .2s;white-space:nowrap;touch-action:manipulation}
 .back-btn:hover{border-color:var(--accent);color:var(--accent)}
 
-/* HERO */
 .hero-strip{padding:clamp(1.2rem,4vw,2rem) clamp(1rem,4vw,2rem) .8rem;text-align:center}
 .hero-strip h1{font-size:clamp(1.4rem,4vw,2rem);font-weight:900;margin-bottom:.4rem}
 .hero-strip h1 em{color:var(--accent);font-style:normal}
 .hero-strip p{font-size:clamp(.82rem,2vw,.95rem);color:var(--muted)}
 
-/* DEF CARDS */
 .cards-section{padding:clamp(.8rem,3vw,1rem) clamp(1rem,4vw,1.5rem)}
 .cards-label{font-size:.72rem;letter-spacing:3px;color:var(--muted);margin-bottom:1rem;text-align:center}
-.cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:.8rem}
-.def-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:clamp(1rem,3vw,1.25rem);position:relative;overflow:hidden;transition:transform .2s,border-color .2s}
+
+/* MOBILE: single column stack */
+.cards-grid{display:grid;grid-template-columns:1fr;gap:.75rem}
+
+/* TABLET+: 2 cols */
+@media(min-width:560px){
+  .cards-grid{grid-template-columns:repeat(2,1fr)}
+}
+/* DESKTOP: 4 cols */
+@media(min-width:900px){
+  .cards-grid{grid-template-columns:repeat(4,1fr)}
+}
+
+.def-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:clamp(1rem,3vw,1.25rem);position:relative;overflow:hidden;transition:transform .2s,border-color .2s;display:flex;align-items:flex-start;gap:1rem}
+@media(min-width:560px){
+  .def-card{display:block}
+}
 .def-card:hover{transform:translateY(-3px);border-color:var(--accent)}
 .def-card::before{content:'';position:absolute;top:0;right:0;width:55px;height:55px;border-radius:0 14px 0 55px;opacity:.12}
 .def-card:nth-child(1)::before{background:var(--accent)}
 .def-card:nth-child(2)::before{background:var(--accent2)}
 .def-card:nth-child(3)::before{background:var(--accent3)}
 .def-card:nth-child(4)::before{background:var(--gold)}
-.card-icon{font-size:1.5rem;margin-bottom:.6rem}
-.card-title{font-size:clamp(.88rem,2.2vw,.95rem);font-weight:700;margin-bottom:.45rem;color:var(--text)}
-.card-body{font-size:clamp(.78rem,1.8vw,.83rem);color:var(--muted);line-height:1.8}
+.card-icon{font-size:1.6rem;flex-shrink:0;margin-bottom:0}
+@media(min-width:560px){
+  .card-icon{font-size:1.5rem;margin-bottom:.6rem}
+}
+.card-text{flex:1}
+@media(min-width:560px){
+  .card-text{flex:none}
+}
+.card-title{font-size:clamp(.88rem,2.2vw,.95rem);font-weight:700;margin-bottom:.35rem;color:var(--text)}
+.card-body{font-size:clamp(.78rem,1.8vw,.83rem);color:var(--muted);line-height:1.75}
 .card-num{position:absolute;bottom:.6rem;left:.6rem;font-size:1.8rem;font-weight:900;opacity:.06;color:#fff}
 
-/* NAV BUTTONS */
 .nav-section{padding:clamp(1rem,4vw,1.5rem)}
 .nav-label{font-size:.72rem;letter-spacing:3px;color:var(--muted);margin-bottom:1rem;text-align:center}
 .nav-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+@media(min-width:700px){
+  .nav-grid{grid-template-columns:repeat(4,1fr)}
+}
 .nav-card{border-radius:14px;padding:clamp(1rem,3vw,1.3rem) 1rem;text-align:center;cursor:pointer;border:1px solid transparent;transition:transform .2s,box-shadow .2s;touch-action:manipulation}
 .nav-card:hover{transform:translateY(-4px)}
 .nav-card:active{transform:scale(.97)}
@@ -71,21 +91,12 @@ html,body{width:100%;min-height:100%;background:var(--bg);color:var(--text);font
 .nc3:hover{box-shadow:0 8px 25px rgba(255,107,53,.2)}
 .nc4:hover{box-shadow:0 8px 25px rgba(255,215,0,.2)}
 
-/* SUB PAGES */
 .sub-page-content{padding:clamp(1rem,4vw,1.5rem);flex:1}
 .sub-page-content h2{font-size:clamp(1.2rem,3.5vw,1.5rem);font-weight:900;margin-bottom:.5rem}
 .sub-page-content .placeholder{background:var(--surface);border:1px dashed var(--border);border-radius:12px;padding:clamp(1.5rem,5vw,2rem);text-align:center;color:var(--muted);margin-top:1rem;font-size:clamp(.82rem,2vw,.9rem);line-height:2}
 
-/* PC: wider layout */
-@media(min-width:700px){
-  .cards-grid{grid-template-columns:repeat(2,1fr)}
-  .nav-grid{grid-template-columns:repeat(4,1fr)}
-  .hero-strip{padding-top:2.5rem}
-  .splash-inner h1{font-size:3.2rem}
-}
 @media(min-width:1000px){
-  .cards-grid{grid-template-columns:repeat(4,1fr)}
-  #main-page .hero-strip,#main-page .cards-section,#main-page .nav-section{max-width:900px;margin-left:auto;margin-right:auto;width:100%}
+  #main-page .hero-strip,#main-page .cards-section,#main-page .nav-section{max-width:960px;margin-left:auto;margin-right:auto;width:100%}
 }
 </style>
 
@@ -156,26 +167,34 @@ window.addEventListener('load',function(){makeStar();goTo('splash')});
     <div class="cards-grid">
       <div class="def-card">
         <div class="card-icon">🤖</div>
-        <div class="card-title">التعريف العام</div>
-        <div class="card-body">الذكاء الاصطناعي هو علم يهدف إلى بناء أنظمة حاسوبية قادرة على محاكاة الذكاء البشري وأداء مهام تتطلب تفكيراً.</div>
+        <div class="card-text">
+          <div class="card-title">التعريف العام</div>
+          <div class="card-body">الذكاء الاصطناعي هو علم يهدف إلى بناء أنظمة حاسوبية قادرة على محاكاة الذكاء البشري وأداء مهام تتطلب تفكيراً.</div>
+        </div>
         <div class="card-num">١</div>
       </div>
       <div class="def-card">
         <div class="card-icon">🧠</div>
-        <div class="card-title">التعلم الآلي</div>
-        <div class="card-body">فرع من الذكاء الاصطناعي يتيح للآلات التعلم من البيانات وتحسين أدائها تلقائياً دون برمجة صريحة لكل مهمة.</div>
+        <div class="card-text">
+          <div class="card-title">التعلم الآلي</div>
+          <div class="card-body">فرع من الذكاء الاصطناعي يتيح للآلات التعلم من البيانات وتحسين أدائها تلقائياً دون برمجة صريحة لكل مهمة.</div>
+        </div>
         <div class="card-num">٢</div>
       </div>
       <div class="def-card">
         <div class="card-icon">👁️</div>
-        <div class="card-title">الرؤية الحاسوبية</div>
-        <div class="card-body">تمكين الحاسوب من تفسير الصور والفيديو وفهمها تماماً كما يفعل الإنسان، وتُستخدم في التعرف على الوجوه وقيادة السيارات.</div>
+        <div class="card-text">
+          <div class="card-title">الرؤية الحاسوبية</div>
+          <div class="card-body">تمكين الحاسوب من تفسير الصور والفيديو وفهمها تماماً كما يفعل الإنسان، وتُستخدم في التعرف على الوجوه وقيادة السيارات.</div>
+        </div>
         <div class="card-num">٣</div>
       </div>
       <div class="def-card">
         <div class="card-icon">💬</div>
-        <div class="card-title">معالجة اللغة</div>
-        <div class="card-body">قدرة الآلة على فهم اللغة البشرية والتحدث بها، وهو ما يُمكّن المساعدات الذكية مثل سيري وكلود من الحوار معنا.</div>
+        <div class="card-text">
+          <div class="card-title">معالجة اللغة</div>
+          <div class="card-body">قدرة الآلة على فهم اللغة البشرية والتحدث بها، وهو ما يُمكّن المساعدات الذكية مثل سيري وكلود من الحوار معنا.</div>
+        </div>
         <div class="card-num">٤</div>
       </div>
     </div>
