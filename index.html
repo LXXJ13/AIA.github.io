@@ -29,7 +29,7 @@
             font-family:'Cairo',sans-serif;
             direction:rtl;
             overflow-x:hidden;
-            font-size: 18px;
+            font-size: 18px; /* This makes everything bigger on phones */
         }
 
         .page{display:none;min-height:100vh;flex-direction:column;animation:fadeIn .45s ease}
@@ -63,6 +63,57 @@
         .nc2{background:linear-gradient(135deg,#160d2d,#1e0a3a);border-color:#2a0a4a;color:var(--accent2)}
         .nc3{background:linear-gradient(135deg,#2d1500,#3a1a00);border-color:#4a2500;color:var(--accent3)}
         .nc4{background:linear-gradient(135deg,#1a1500,#2a2000);border-color:#3a3000;color:var(--gold)}
+
+        .sub-page-content{padding:1.5rem;flex:1}
+        .placeholder{background:var(--surface);border:1px dashed var(--border);border-radius:12px;padding:2rem;text-align:center;color:var(--muted);margin-top:1rem;line-height:2}
+
+        @media(min-width:1000px){
+            .page{max-width:800px;margin:0 auto}
+        }
+    </style>
+</head>
+<body>
+
+<div class="page active" id="main-page">
+    <div class="top-bar"><h2>الذكاء الاصطناعي</h2></div>
+    <div class="cards-section">
+        <div class="def-card">
+            <div class="card-icon">🤖</div>
+            <div class="card-title">مرحباً بك</div>
+            <div class="card-body">تم تحديث التصميم ليكون أكبر وأوضح على الجوال. اختر قسماً من الأسفل لبدء العرض.</div>
+        </div>
+    </div>
+    <div class="nav-grid">
+        <div class="nav-card nc1" onclick="goTo('page1')"><div class="nav-icon">📖</div><h3>التاريخ</h3></div>
+        <div class="nav-card nc2" onclick="goTo('page2')"><div class="nav-icon">⚙️</div><h3>العمل</h3></div>
+        <div class="nav-card nc3" onclick="goTo('page3')"><div class="nav-icon">🌍</div><h3>التطبيقات</h3></div>
+        <div class="nav-card nc4" onclick="goTo('page4')"><div class="nav-icon">🔮</div><h3>المستقبل</h3></div>
+    </div>
+</div>
+
+<div class="page" id="page1">
+    <div class="top-bar"><h2>تاريخ التقنية</h2><button class="back-btn" onclick="goTo('main-page')">رجوع</button></div>
+    <div class="sub-page-content">
+        <div class="def-card">
+            <div class="card-title">البداية</div>
+            <div class="card-body">بدأ الذكاء الاصطناعي كفكرة في منتصف القرن العشرين، وتطور حتى أصبح جزءاً من حياتنا اليومية.</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function goTo(id){
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        var target = document.getElementById(id);
+        if(target) {
+            target.classList.add('active');
+            window.scrollTo(0,0);
+        }
+    }
+</script>
+
+</body>
+</html>        .nc4{background:linear-gradient(135deg,#1a1500,#2a2000);border-color:#3a3000;color:var(--gold)}
 
         .sub-page-content{padding:1.5rem;flex:1}
         .placeholder{background:var(--surface);border:1px dashed var(--border);border-radius:12px;padding:2rem;text-align:center;color:var(--muted);margin-top:1rem;line-height:2}
