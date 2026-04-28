@@ -1,105 +1,381 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الذكاء الاصطناعي - Interactive</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-            color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow-x: hidden;
-        }
 
-        /* Glassmorphism effect for cards */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 24px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;min-height:100%;font-family:'Cairo',sans-serif;direction:rtl;overflow-x:hidden;background:#0a0a2e}
+.page{display:none;min-height:100vh;flex-direction:column;animation:fadeIn .4s ease}
+.page.active{display:flex}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
-        .glass-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-        }
+.bg{background:linear-gradient(135deg,#0a0a2e 0%,#1a0a4e 40%,#2a0a6e 70%,#1a1a5e 100%);min-height:100vh;display:flex;flex-direction:column;position:relative;overflow:hidden}
+.bg::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(100,0,200,.25) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(0,100,255,.2) 0%,transparent 50%);pointer-events:none}
 
-        /* Animated background pulse */
-        .glow-bg {
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(147, 51, 234, 0.3) 0%, transparent 70%);
-            z-index: -1;
-            animation: float 6s infinite ease-in-out;
-        }
+/* TOP BAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;position:relative;z-index:10;gap:1rem;flex-shrink:0}
+.topbar-title{font-size:clamp(1.1rem,3.5vw,1.8rem);font-weight:900;color:#fff;text-shadow:0 0 20px rgba(200,100,255,.6)}
+.back-pill{background:linear-gradient(135deg,#6633cc,#4466ff);color:#fff;border:none;padding:.5rem 1.4rem;border-radius:50px;font-family:'Cairo',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;transition:transform .2s,box-shadow .2s;touch-action:manipulation;white-space:nowrap}
+.back-pill:hover{transform:scale(1.05);box-shadow:0 4px 20px rgba(100,50,255,.5)}
+.back-pill:active{transform:scale(.96)}
 
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(20px, 40px); }
-        }
-    </style>
-</head>
-<body class="min-h-screen flex flex-col items-center p-8">
+/* ── FOOTER ── */
+.site-footer{position:relative;z-index:10;background:rgba(5,0,30,.75);border-top:1px solid rgba(160,100,255,.2);backdrop-filter:blur(10px);padding:1.6rem 1.5rem 1.2rem;margin-top:auto;flex-shrink:0}
+.footer-inner{max-width:900px;margin:0 auto;display:grid;grid-template-columns:1fr;gap:1.4rem}
+@media(min-width:600px){.footer-inner{grid-template-columns:1fr 1fr}}
+@media(min-width:900px){.footer-inner{grid-template-columns:1fr 1fr 1fr}}
+.footer-col h4{font-size:.78rem;letter-spacing:3px;text-transform:uppercase;color:rgba(160,100,255,.7);margin-bottom:.75rem;font-weight:700}
+.footer-logo{font-size:1.2rem;font-weight:900;color:#fff;margin-bottom:.4rem}
+.footer-logo span{background:linear-gradient(90deg,#a06bff,#00cfff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.footer-school{font-size:.85rem;color:rgba(200,180,255,.8);line-height:1.7}
+.footer-teacher{font-size:.85rem;color:rgba(200,180,255,.8);line-height:1.8}
+.footer-teacher strong{color:#00cfff;font-weight:700}
+.students-list{list-style:none;display:flex;flex-direction:column;gap:.3rem}
+.students-list li{font-size:.82rem;color:rgba(200,180,255,.85);display:flex;align-items:center;gap:.5rem;line-height:1.6}
+.students-list li::before{content:'';width:6px;height:6px;border-radius:50%;background:linear-gradient(135deg,#a06bff,#00cfff);flex-shrink:0}
+.footer-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(160,100,255,.3),transparent);margin:1rem 0 .8rem;max-width:900px;margin-left:auto;margin-right:auto}
+.footer-bottom{text-align:center;font-size:.75rem;color:rgba(160,140,200,.5);position:relative;z-index:10}
 
-    <div class="glow-bg" style="top: 10%; left: 10%;"></div>
-    <div class="glow-bg" style="bottom: 10%; right: 10%;"></div>
+/* SPLASH */
+#splash .bg{align-items:center;justify-content:center;text-align:center}
+.stars-wrap{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.star{position:absolute;border-radius:50%;background:#fff;animation:twinkle 3s ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:.1}50%{opacity:.7}}
+.splash-inner{position:relative;z-index:2;padding:2rem 1.5rem;display:flex;flex-direction:column;align-items:center;gap:1rem}
+.chip-icon{width:100px;height:100px;border-radius:20px;border:2.5px solid #a06bff;display:flex;align-items:center;justify-content:center;background:rgba(120,60,255,.15);animation:glow 2.5s ease-in-out infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(160,100,255,.4),0 0 30px rgba(100,50,255,.2)}50%{box-shadow:0 0 0 18px rgba(160,100,255,0),0 0 60px rgba(100,50,255,.4)}}
+.splash-h1{font-size:clamp(2rem,7vw,3.5rem);font-weight:900;color:#fff;line-height:1.15}
+.splash-h1 span{background:linear-gradient(90deg,#a06bff,#00cfff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.splash-sub{font-size:clamp(.9rem,2.5vw,1.1rem);color:rgba(180,160,255,.8);margin-bottom:.5rem}
+.btn-start{background:linear-gradient(135deg,#7b2fff,#00cfff);color:#fff;border:none;padding:1rem 3rem;border-radius:50px;font-family:'Cairo',sans-serif;font-size:1.1rem;font-weight:700;cursor:pointer;transition:transform .2s,box-shadow .2s;touch-action:manipulation;margin-top:.5rem}
+.btn-start:hover{transform:scale(1.06);box-shadow:0 8px 35px rgba(120,50,255,.5)}
+.btn-start:active{transform:scale(.97)}
 
-    <header class="text-center mb-12 animate-fade-in">
-        <h1 class="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-blue-400 mb-4">
-            الذكاء الاصطناعي
-        </h1>
-        <p class="text-xl text-purple-200">يُعد الثورة الصناعية الرابعة</p>
-    </header>
+/* HOME */
+.home-hero{text-align:center;padding:1rem 1.5rem;position:relative;z-index:2}
+.home-hero h1{font-size:clamp(1.1rem,3.5vw,1.6rem);font-weight:900;color:#fff;margin-bottom:.3rem}
+.home-hero h1 em{background:linear-gradient(90deg,#ff6bda,#00cfff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-style:normal}
+.home-hero p{font-size:.9rem;color:rgba(200,180,255,.75)}
 
-    <main class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl">
-        
-        <div class="glass-card p-6">
-            <h3 class="text-2xl font-bold mb-4 text-blue-300">تعريف الذكاء الاصطناعي</h3>
-            <p class="text-sm leading-relaxed">
-                هو فرع من فروع علوم الحاسوب يهدف إلى بناء أنظمة وبرامج قادرة على محاكاة القدرات الذهنية البشرية وأنماط عملها.
-            </p>
+/* DEF CARDS */
+.def-section{padding:.5rem 1.2rem 1rem;position:relative;z-index:2}
+.section-label{font-size:.7rem;letter-spacing:3px;color:rgba(180,150,255,.6);text-align:center;margin-bottom:.8rem}
+.def-cards{display:flex;flex-direction:column;gap:.85rem}
+.def-card{background:linear-gradient(135deg,rgba(140,40,200,.55),rgba(100,30,180,.45));border:1.5px solid rgba(200,100,255,.3);border-radius:18px;padding:1.4rem 1.5rem;position:relative;overflow:hidden;backdrop-filter:blur(8px);transition:transform .2s,border-color .2s}
+.def-card:hover{transform:translateY(-2px);border-color:rgba(200,100,255,.6)}
+.def-card-top{display:flex;align-items:center;gap:.8rem;margin-bottom:.6rem}
+.def-card-icon{font-size:1.8rem;flex-shrink:0}
+.def-card-title{font-size:1.05rem;font-weight:700;color:#fff}
+.def-card-body{font-size:.88rem;color:rgba(220,200,255,.9);line-height:1.85}
+
+/* NAV BUTTONS */
+.nav-section{padding:1rem 1.2rem 1.5rem;position:relative;z-index:2}
+.nav-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+.nav-btn{background:linear-gradient(135deg,rgba(60,20,160,.7),rgba(80,30,200,.5));border:1.5px solid rgba(150,80,255,.35);border-radius:16px;padding:1rem .8rem;text-align:center;cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s;touch-action:manipulation}
+.nav-btn:hover{transform:translateY(-3px);box-shadow:0 8px 25px rgba(120,50,255,.3);border-color:rgba(200,100,255,.6)}
+.nav-btn:active{transform:scale(.97)}
+.nav-btn-icon{font-size:1.6rem;margin-bottom:.4rem}
+.nav-btn h3{font-size:.88rem;font-weight:700;color:#fff;margin-bottom:.2rem}
+.nav-btn p{font-size:.72rem;color:rgba(200,180,255,.7)}
+
+/* SUB CONTENT */
+.sub-content{padding:1.2rem 1.5rem;position:relative;z-index:2;flex:1;display:flex;flex-direction:column;gap:1.2rem}
+.text-card{background:linear-gradient(135deg,rgba(140,40,220,.6),rgba(100,20,180,.5));border:1.5px solid rgba(200,100,255,.35);border-radius:20px;padding:1.6rem 1.5rem;backdrop-filter:blur(8px);color:rgba(220,200,255,.95);font-size:clamp(.88rem,2.2vw,.95rem);line-height:2;position:relative;overflow:hidden}
+.text-card h3{font-size:1rem;font-weight:700;color:#00cfff;margin-bottom:.6rem;margin-top:.8rem}
+.text-card h3:first-child{margin-top:0}
+.num-list{display:flex;flex-direction:column;gap:1rem}
+.num-item{background:linear-gradient(135deg,rgba(140,40,220,.55),rgba(100,20,180,.45));border:1.5px solid rgba(200,100,255,.3);border-radius:16px;padding:1.2rem 1.4rem;display:flex;gap:1rem;align-items:flex-start}
+.num-badge{background:linear-gradient(135deg,#7b2fff,#00cfff);color:#fff;font-weight:900;font-size:1rem;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:.1rem}
+.num-item-text{color:rgba(220,200,255,.9);font-size:.9rem;line-height:1.85}
+.num-item-title{font-size:.95rem;font-weight:700;color:#fff;margin-bottom:.3rem}
+.deco-icons{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:1}
+.deco-icon{position:absolute;font-size:clamp(2.5rem,8vw,4rem);opacity:.08}
+
+/* QUIZ */
+.quiz-label{text-align:center;font-size:1rem;font-weight:700;color:#fff;margin-bottom:1rem}
+.quiz-imgs{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap}
+.quiz-img-wrap{flex:1;min-width:130px;max-width:200px;display:flex;flex-direction:column;gap:.7rem;align-items:center}
+.quiz-img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:16px;border:2.5px solid rgba(200,100,255,.4);background:linear-gradient(135deg,#2a0a5e,#1a0a3e)}
+.quiz-btn{background:linear-gradient(135deg,#3b1faa,#5566ff);color:#fff;border:none;padding:.7rem 1.5rem;border-radius:50px;font-family:'Cairo',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;width:100%;transition:transform .2s;touch-action:manipulation}
+.quiz-btn:hover{transform:scale(1.04)}
+.quiz-result{text-align:center;font-size:.95rem;font-weight:700;padding:.8rem;border-radius:12px;margin-top:.5rem;display:none}
+.quiz-result.show{display:block}
+.quiz-result.correct{background:rgba(0,200,100,.2);color:#00ff88;border:1px solid rgba(0,200,100,.4)}
+.quiz-result.wrong{background:rgba(200,50,50,.2);color:#ff6b6b;border:1px solid rgba(200,50,50,.4)}
+
+/* DESKTOP */
+@media(min-width:700px){
+  .def-cards{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+  .nav-grid{grid-template-columns:repeat(4,1fr)}
+  .def-section,.nav-section,.sub-content,.home-hero{padding-left:2rem;padding-right:2rem;max-width:900px;margin-left:auto;margin-right:auto;width:100%}
+  .topbar{padding:1.2rem 2rem}
+  .quiz-imgs{flex-wrap:nowrap}
+}
+@media(min-width:900px){
+  .def-cards{grid-template-columns:repeat(4,1fr)}
+}
+</style>
+
+<script>
+function makeStar(){
+  var w=document.querySelector('.stars-wrap');if(!w)return;
+  for(var i=0;i<55;i++){
+    var d=document.createElement('div');d.className='star';
+    var s=Math.random()*2+.5;
+    d.style.cssText='width:'+s+'px;height:'+s+'px;top:'+Math.random()*100+'%;left:'+Math.random()*100+'%;animation-delay:'+Math.random()*4+'s;animation-duration:'+(2+Math.random()*3)+'s';
+    w.appendChild(d);
+  }
+}
+function goTo(id){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function pick(choice){
+  var r=document.getElementById('quiz-result');
+  if(choice==='ai'){
+    r.className='quiz-result show correct';
+    r.textContent='✅ صحيح! هذه الصورة مولّدة بالذكاء الاصطناعي';
+  } else {
+    r.className='quiz-result show wrong';
+    r.textContent='❌ خطأ! حاول مرة أخرى';
+  }
+}
+window.addEventListener('load',function(){makeStar();goTo('splash')});
+</script>
+
+<!-- FOOTER TEMPLATE (reused via JS) -->
+<template id="footer-tpl">
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-col">
+        <h4>المدرسة</h4>
+        <div class="footer-logo">مدرسة <span>العز بن عبد السلام</span></div>
+        <div class="footer-school">بحث في مادة الحاسب وتقنية المعلومات<br>الذكاء الاصطناعي</div>
+      </div>
+      <div class="footer-col">
+        <h4>أعضاء المجموعة</h4>
+        <ul class="students-list">
+          <li>علي مصطفى الحمادي</li>
+          <li>سلمان ممدوح المطرفي</li>
+          <li>إبراهيم علي الداوود</li>
+          <li>سليمان محمد الضباح</li>
+          <li>فهد سعيد الزهراني</li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>المعلم المشرف</h4>
+        <div class="footer-teacher">
+          <strong>أ. عبدالعزيز عبدالله الزهراني</strong><br>
+          <span style="font-size:.8rem;color:rgba(180,160,220,.7)">مادة الحاسب وتقنية المعلومات</span>
         </div>
+      </div>
+    </div>
+    <div class="footer-divider"></div>
+    <div class="footer-bottom">© 2025 — مدرسة العز بن عبد السلام &nbsp;·&nbsp; جميع الحقوق محفوظة</div>
+  </footer>
+</template>
 
-        <div class="glass-card p-6">
-            <h3 class="text-2xl font-bold mb-4 text-blue-300">مستقبل الذكاء الاصطناعي</h3>
-            <p class="text-sm leading-relaxed">
-                يتجه المستقبل نحو اندماج أكبر بين الإنسان والآلة، وزيادة في دقة الترجمة الفورية لتلغي حواجز اللغة تماماً.
-            </p>
+<script>
+// Inject footer into every .bg div after load
+window.addEventListener('load', function(){
+  var tpl = document.getElementById('footer-tpl');
+  document.querySelectorAll('.bg').forEach(function(bg){
+    bg.appendChild(tpl.content.cloneNode(true));
+  });
+});
+</script>
+
+<!-- ══════════ SPLASH ══════════ -->
+<div class="page active" id="splash">
+  <div class="bg">
+    <div class="stars-wrap"></div>
+    <div class="splash-inner">
+      <div class="chip-icon">
+        <svg width="58" height="58" viewBox="0 0 58 58" fill="none">
+          <rect x="15" y="15" width="28" height="28" rx="5" stroke="#a06bff" stroke-width="2" fill="rgba(160,100,255,0.1)"/>
+          <rect x="21" y="21" width="16" height="16" rx="3" stroke="#00cfff" stroke-width="1.5" fill="rgba(0,200,255,0.12)"/>
+          <line x1="29" y1="21" x2="29" y2="37" stroke="#a06bff" stroke-width=".8" opacity=".6"/>
+          <line x1="21" y1="29" x2="37" y2="29" stroke="#a06bff" stroke-width=".8" opacity=".6"/>
+          <line x1="21" y1="15" x2="21" y2="8" stroke="#00cfff" stroke-width="2" stroke-linecap="round"/>
+          <line x1="29" y1="15" x2="29" y2="8" stroke="#00cfff" stroke-width="2" stroke-linecap="round"/>
+          <line x1="37" y1="15" x2="37" y2="8" stroke="#00cfff" stroke-width="2" stroke-linecap="round"/>
+          <line x1="21" y1="43" x2="21" y2="50" stroke="#00cfff" stroke-width="2" stroke-linecap="round"/>
+          <line x1="29" y1="43" x2="29" y2="50" stroke="#00cfff" stroke-width="2" stroke-linecap="round"/>
+          <line x1="37" y1="43" x2="37" y2="50" stroke="#00cfff" stroke-width="2" stroke-linecap="round"/>
+          <line x1="15" y1="21" x2="8" y2="21" stroke="#a06bff" stroke-width="2" stroke-linecap="round"/>
+          <line x1="15" y1="29" x2="8" y2="29" stroke="#a06bff" stroke-width="2" stroke-linecap="round"/>
+          <line x1="15" y1="37" x2="8" y2="37" stroke="#a06bff" stroke-width="2" stroke-linecap="round"/>
+          <line x1="43" y1="21" x2="50" y2="21" stroke="#a06bff" stroke-width="2" stroke-linecap="round"/>
+          <line x1="43" y1="29" x2="50" y2="29" stroke="#a06bff" stroke-width="2" stroke-linecap="round"/>
+          <line x1="43" y1="37" x2="50" y2="37" stroke="#a06bff" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="29" cy="29" r="3" fill="#00cfff" opacity=".9"/>
+        </svg>
+      </div>
+      <div class="splash-h1">الذكاء <span>الاصطناعي</span></div>
+      <div class="splash-sub">بحث مدرسي — اكتشف عالم الذكاء الاصطناعي</div>
+      <button class="btn-start" onclick="goTo('home')">ابدأ الرحلة ←</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ HOME ══════════ -->
+<div class="page" id="home">
+  <div class="bg">
+    <div class="topbar">
+      <div class="topbar-title">الذكاء الاصطناعي</div>
+      <button class="back-pill" onclick="goTo('splash')">العودة</button>
+    </div>
+    <div class="home-hero">
+      <h1>يُعدّ الذكاء الاصطناعي <em>الثورة الصناعية الرابعة</em></h1>
+    </div>
+    <div class="def-section">
+      <div class="section-label">المفاهيم الأساسية</div>
+      <div class="def-cards">
+        <div class="def-card">
+          <div class="def-card-top"><div class="def-card-icon">🤖</div><div class="def-card-title">تعريف الذكاء الاصطناعي</div></div>
+          <div class="def-card-body">هو فرع من علوم الحاسوب يهدف إلى بناء أنظمة وبرامج قادرة على محاكاة القدرات الذهنية البشرية وأنماط عملها. تشمل هذه القدرات الاستنتاج، التعلم، التصحيح الذاتي، والإدراك البصري والسمعي.</div>
         </div>
-
-        <div class="glass-card p-6">
-            <h3 class="text-2xl font-bold mb-4 text-blue-300">تعلم الآلة</h3>
-            <p class="text-sm leading-relaxed">
-                هو العلم الذي يسمح للحواسيب بالتعلم من البيانات دون برمجة صريحة لكل خطوة.
-            </p>
+        <div class="def-card">
+          <div class="def-card-top"><div class="def-card-icon">📖</div><div class="def-card-title">الجذور التاريخية</div></div>
+          <div class="def-card-body">بدأت الخمسينيات من القرن الماضي، وتحديداً مع "آلان تورينج" الذي وضع اختبار تورينج لقياس ذكاء الآلة. وفي عام 1956 عُقد مؤتمر "دارتموث" الذي شهد ولادة مصطلح "الذكاء الاصطناعي" رسمياً.</div>
         </div>
-
-        <div class="glass-card p-6">
-            <h3 class="text-2xl font-bold mb-4 text-blue-300">الجذور التاريخية</h3>
-            <p class="text-sm leading-relaxed">
-                بدأت في الخمسينيات مع "آلان تورينج" واختباره الشهير، وصولاً إلى عصرنا الحالي المتميز بوفرة البيانات.
-            </p>
+        <div class="def-card">
+          <div class="def-card-top"><div class="def-card-icon">🧠</div><div class="def-card-title">تعلم الآلة</div></div>
+          <div class="def-card-body">هو العلم الذي يسمح للحواسيب بالتعلم من البيانات دون برمجة صريحة لكل خطوة. يعتمد على خوارزميات تكتشف الأنماط وتتخذ القرارات بناءً عليها.</div>
         </div>
-    </main>
+        <div class="def-card">
+          <div class="def-card-top"><div class="def-card-icon">🔮</div><div class="def-card-title">مستقبل الذكاء الاصطناعي</div></div>
+          <div class="def-card-body">يتجه المستقبل نحو اندماج أكبر بين الإنسان والآلة، وزيادة في دقة الترجمة الفورية لتلغي حواجز اللغة تماماً. التحدي الأكبر سيبقى وضع أطر قانونية وأخلاقية تضمن بقاء هذه التقنية خادمة للبشرية.</div>
+        </div>
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-grid">
+        <div class="nav-btn" onclick="goTo('page-types')"><div class="nav-btn-icon">🧩</div><h3>انواع الذكاء الاصطناعي</h3><p>المستويات الثلاثة</p></div>
+        <div class="nav-btn" onclick="goTo('page-apps')"><div class="nav-btn-icon">🌍</div><h3>تطبيقات الذكاء الاصطناعي</h3><p>استخدامات في الحياة</p></div>
+        <div class="nav-btn" onclick="goTo('page-gen')"><div class="nav-btn-icon">✨</div><h3>الذكاء الاصطناعي التوليدي</h3><p>اكتشف الصورة</p></div>
+        <div class="nav-btn" onclick="goTo('page-future')"><div class="nav-btn-icon">🚀</div><h3>مستقبل الذكاء الاصطناعي</h3><p>ماذا ينتظرنا؟</p></div>
+      </div>
+    </div>
+  </div>
+</div>
 
-    <nav class="mt-16 flex flex-wrap justify-center gap-4">
-        <button class="px-8 py-3 bg-blue-600 hover:bg-blue-500 rounded-full font-bold transition-all transform hover:scale-110 shadow-lg">
-            أنواع الذكاء الاصطناعي
-        </button>
-        <button class="px-8 py-3 bg-blue-600 hover:bg-blue-500 rounded-full font-bold transition-all transform hover:scale-110 shadow-lg">
-            تطبيقات الذكاء الاصطناعي
-        </button>
-        <button class="px-8 py-3 bg-blue-600 hover:bg-blue-500 rounded-full font-bold transition-all transform hover:scale-110 shadow-lg">
-            الذكاء الاصطناعي التوليدي
-        </button>
-        <button class="px-8 py-3 bg-blue-600 hover:bg-blue-500 rounded-full font-bold transition-all transform hover:scale-110 shadow-lg">
-            مستقبل الذكاء الاصطناعي
-        </button>
-    </nav>
+<!-- ══════════ PAGE 1: TYPES ══════════ -->
+<div class="page" id="page-types">
+  <div class="bg">
+    <div class="deco-icons">
+      <span class="deco-icon" style="top:15%;right:3%">🧠</span>
+      <span class="deco-icon" style="top:20%;left:3%">🕸️</span>
+      <span class="deco-icon" style="bottom:20%;left:5%">⚙️</span>
+    </div>
+    <div class="topbar">
+      <div class="topbar-title">انواع الذكاء الاصطناعي</div>
+      <button class="back-pill" onclick="goTo('home')">العودة</button>
+    </div>
+    <div class="sub-content">
+      <div class="text-card" style="text-align:center">يُصنف الذكاء الاصطناعي وفقاً لدرجة قدراته إلى ثلاثة مستويات:</div>
+      <div class="num-list">
+        <div class="num-item">
+          <div class="num-badge">١</div>
+          <div class="num-item-text"><div class="num-item-title">الذكاء الاصطناعي الضيق أو المحدود (ANI)</div>هو النوع السائد حالياً، حيث يتم تصميم النظام لأداء مهمة محددة جداً مثل لعب الشطرنج أو التعرف على الوجوه.</div>
+        </div>
+        <div class="num-item">
+          <div class="num-badge">٢</div>
+          <div class="num-item-text"><div class="num-item-title">الذكاء الاصطناعي العام (AGI)</div>وهو نظام يمتلك ذكاءً يضاهي البشر في كافة المجالات، بحيث يمكنه تعلم أي مهمة فكرية يستطيع الإنسان القيام بها (لا يزال قيد البحث والتطوير).</div>
+        </div>
+        <div class="num-item">
+          <div class="num-badge">٣</div>
+          <div class="num-item-text"><div class="num-item-title">الذكاء الاصطناعي الفائق (ASI)</div>وهو مستوى نظري يفوق فيه ذكاء الآلة ذكاء البشر في جميع المجالات، بما في ذلك الإبداع العلمي والحكمة العامة.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-</body>
-</html>
+<!-- ══════════ PAGE 2: APPS ══════════ -->
+<div class="page" id="page-apps">
+  <div class="bg">
+    <div class="deco-icons">
+      <span class="deco-icon" style="top:12%;right:2%">🏠</span>
+      <span class="deco-icon" style="top:15%;left:2%">📈</span>
+      <span class="deco-icon" style="bottom:18%;right:4%">🚌</span>
+      <span class="deco-icon" style="bottom:18%;left:4%">🏥</span>
+    </div>
+    <div class="topbar">
+      <div class="topbar-title">تطبيقات الذكاء الاصطناعي</div>
+      <button class="back-pill" onclick="goTo('home')">العودة</button>
+    </div>
+    <div class="sub-content">
+      <div class="text-card" style="text-align:center;font-weight:700">لقد تغلغل الذكاء الاصطناعي في مختلف القطاعات الحيوية:</div>
+      <div class="text-card">
+        <h3>١. الرعاية الصحية:</h3>
+        يُستخدم في تشخيص الأمراض بدقة عالية (مثل السرطان من خلال الصور الإشعاعية)، وتطوير الأدوية الجديدة، ومراقبة الحالة الصحية للمرضى عن بُعد باستخدام الأجهزة القابلة للارتداء.
+        <h3>٢. قطاع المال والأعمال:</h3>
+        تستخدم البنوك الذكاء الاصطناعي لكشف عمليات الاحتيال، وإدارة المحافظ الاستثمارية آلياً، وتحليل بيانات السوق للتنبؤ بالاتجاهات المستقبلية.
+        <h3>٣. النقل والمواصلات:</h3>
+        تُعدّ السيارات ذاتية القيادة (Autonomous Vehicles) من أبرز الأمثلة، بالإضافة إلى تحسين الأنظمة اللوجستية وتخطيط الطرق لتقليل استهلاك الوقود والزحام.
+        <h3>٤. التعليم:</h3>
+        يساهم في تخصيص التعليم (Personalized Learning)، حيث يتم تكييف المناهج لتناسب سرعة واستيعاب كل طالب على حدة، وتوفير مساعدين أذكياء للإجابة على تساؤلات الطلاب فوراً.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PAGE 3: GENERATIVE AI ══════════ -->
+<div class="page" id="page-gen">
+  <div class="bg">
+    <div class="topbar">
+      <div class="topbar-title">الذكاء الاصطناعي التوليدي</div>
+      <button class="back-pill" onclick="goTo('home')">العودة</button>
+    </div>
+    <div class="sub-content">
+      <div class="text-card">
+        <div class="quiz-label">اوجد الصورة المولّدة بستخدام الذكاء الاصطناعي التوليدي</div>
+        <div class="quiz-imgs">
+          <div class="quiz-img-wrap">
+            <div class="quiz-img" style="background:linear-gradient(135deg,#1a0a3e,#2a1a5e);display:flex;align-items:center;justify-content:center;font-size:3rem">🦜</div>
+            <button class="quiz-btn" onclick="pick('real')">اختار</button>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;color:rgba(200,180,255,.8);font-size:.95rem;font-weight:700;padding:.5rem">أم</div>
+          <div class="quiz-img-wrap">
+            <div class="quiz-img" style="background:linear-gradient(135deg,#0a1a3e,#1a0a5e);display:flex;align-items:center;justify-content:center;font-size:3rem">🤖</div>
+            <button class="quiz-btn" onclick="pick('ai')">اختار</button>
+          </div>
+        </div>
+        <div id="quiz-result" class="quiz-result"></div>
+        <div style="margin-top:1.2rem;font-size:.85rem;color:rgba(200,180,255,.8);line-height:1.9">
+          الذكاء الاصطناعي التوليدي هو نوع قادر على إنشاء محتوى جديد — صور، نصوص، موسيقى — من خلال التعلم من بيانات ضخمة. من أبرز أمثلته: ChatGPT وMidjourney وDALL·E.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PAGE 4: FUTURE ══════════ -->
+<div class="page" id="page-future">
+  <div class="bg">
+    <div class="topbar">
+      <div class="topbar-title">مستقبل الذكاء الاصطناعي</div>
+      <button class="back-pill" onclick="goTo('home')">العودة</button>
+    </div>
+    <div class="sub-content">
+      <div class="text-card">
+        <h3>مستقبل الذكاء الاصطناعي</h3>
+        يتجه المستقبل نحو اندماج أكبر بين الإنسان والآلة. من المتوقع أن نرى تطوراً في "الروبوتات الاجتماعية" التي تفهم العواطف، وزيادة في دقة الترجمة الفورية لتلغي حواجز اللغة تماماً. التحدي الأكبر سيبقى في كيفية وضع أطر قانونية وأخلاقية تضمن بقاء هذه التقنية خادمة للبشرية وليس تهديداً لها.
+      </div>
+      <div class="num-list">
+        <div class="num-item">
+          <div class="num-badge">🤝</div>
+          <div class="num-item-text"><div class="num-item-title">اندماج الإنسان والآلة</div>تطوير واجهات مباشرة بين الدماغ البشري والحاسوب لتعزيز القدرات الإنسانية.</div>
+        </div>
+        <div class="num-item">
+          <div class="num-badge">🌐</div>
+          <div class="num-item-text"><div class="num-item-title">إزالة حواجز اللغة</div>ترجمة فورية دقيقة تتيح التواصل بين جميع شعوب العالم بلا عوائق.</div>
+        </div>
+        <div class="num-item">
+          <div class="num-badge">⚖️</div>
+          <div class="num-item-text"><div class="num-item-title">الأطر القانونية والأخلاقية</div>وضع قوانين دولية تضمن استخدام الذكاء الاصطناعي لخدمة البشرية بأمان ومسؤولية.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
