@@ -1,68 +1,158 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>بحث الذكاء الاصطناعي</title>
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+    
+    *{box-sizing:border-box;margin:0;padding:0}
+    
+    :root{
+        --bg:#04080F;
+        --surface:#0D1421;
+        --border:#1a2a3a;
+        --accent:#00D4FF;
+        --accent2:#7B2FFF;
+        --accent3:#FF6B35;
+        --gold:#FFD700;
+        --text:#E8F4FD;
+        --muted:#6B8FA8
+    }
 
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
-*{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#04080F;--surface:#0D1421;--border:#1a2a3a;--accent:#00D4FF;--accent2:#7B2FFF;--accent3:#FF6B35;--gold:#FFD700;--text:#E8F4FD;--muted:#6B8FA8}
-html,body{width:100%;min-height:100%;background:var(--bg);color:var(--text);font-family:'Cairo',sans-serif;direction:rtl;overflow-x:hidden}
-.page{display:none;min-height:100vh;animation:fadeIn .45s ease;flex-direction:column}
-.page.active{display:flex}
-@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    html,body{
+        width:100%;
+        min-height:100%;
+        background:var(--bg);
+        color:var(--text);
+        font-family: 'Cairo', sans-serif;
+        direction:rtl;
+        overflow-x:hidden;
+        /* Increased base font size for mobile readability */
+        font-size: 18px; 
+    }
 
-#splash{align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden;padding:2rem 1rem}
-.stars{position:absolute;inset:0;pointer-events:none}
-.star{position:absolute;border-radius:50%;background:#fff;animation:twinkle 3s infinite}
-@keyframes twinkle{0%,100%{opacity:.15}50%{opacity:.8}}
-.splash-glow{position:absolute;width:min(420px,90vw);height:min(420px,90vw);border-radius:50%;background:radial-gradient(circle,rgba(0,212,255,.13) 0%,transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
-.splash-inner{position:relative;z-index:1;padding:1rem;width:100%;max-width:480px;margin:0 auto}
-.ai-icon{width:clamp(70px,18vw,100px);height:clamp(70px,18vw,100px);border-radius:18px;border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;background:rgba(0,212,255,.06);animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,212,255,.3)}50%{box-shadow:0 0 0 16px rgba(0,212,255,0)}}
-.splash-inner h1{font-size:clamp(1.8rem,6vw,3rem);font-weight:900;line-height:1.2;margin-bottom:.5rem}
-.splash-inner h1 span{color:var(--accent)}
-.splash-sub{font-size:clamp(.85rem,2.5vw,1rem);color:var(--muted);margin-bottom:2rem}
-.btn-start{background:linear-gradient(135deg,var(--accent2),var(--accent));color:#fff;border:none;padding:clamp(12px,3vw,16px) clamp(28px,6vw,48px);border-radius:50px;font-family:'Cairo',sans-serif;font-size:clamp(.95rem,2.5vw,1.1rem);font-weight:700;cursor:pointer;transition:transform .2s,box-shadow .2s;touch-action:manipulation}
-.btn-start:hover{transform:scale(1.05);box-shadow:0 8px 30px rgba(0,212,255,.3)}
-.btn-start:active{transform:scale(.97)}
+    .page{display:none;min-height:100vh;flex-direction:column;animation:fadeIn .45s ease}
+    .page.active{display:flex}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
-.top-bar{padding:clamp(.9rem,3vw,1.3rem) clamp(1rem,4vw,2rem);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-shrink:0}
-.top-bar h2{font-size:clamp(.95rem,2.5vw,1.1rem);font-weight:700;color:var(--accent)}
-.back-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px clamp(10px,2vw,18px);border-radius:20px;font-family:'Cairo',sans-serif;font-size:clamp(.8rem,2vw,.9rem);cursor:pointer;transition:all .2s;white-space:nowrap;touch-action:manipulation}
-.back-btn:hover{border-color:var(--accent);color:var(--accent)}
+    /* SPLASH - Made elements larger */
+    #splash{align-items:center;justify-content:center;text-align:center;position:relative;overflow:hidden;padding:3rem 1.5rem}
+    .stars{position:absolute;inset:0;pointer-events:none}
+    .star{position:absolute;border-radius:50%;background:#fff;animation:twinkle 3s infinite}
+    @keyframes twinkle{0%,100%{opacity:.15}50%{opacity:.8}}
 
-.hero-strip{padding:clamp(1.2rem,4vw,2rem) clamp(1rem,4vw,2rem) .8rem;text-align:center}
-.hero-strip h1{font-size:clamp(1.4rem,4vw,2rem);font-weight:900;margin-bottom:.4rem}
-.hero-strip h1 em{color:var(--accent);font-style:normal}
-.hero-strip p{font-size:clamp(.82rem,2vw,.95rem);color:var(--muted)}
+    .splash-inner{position:relative;z-index:1;width:100%;max-width:500px;margin:0 auto;padding:1.5rem}
+    .ai-icon{width:110px;height:110px;border-radius:22px;border:2px solid var(--accent);display:flex;align-items:center;justify-content:center;margin:0 auto 2rem;background:rgba(0,212,255,.06);animation:pulse 2s infinite}
+    
+    .splash-inner h1{font-size:3.2rem;font-weight:900;line-height:1.1;margin-bottom:1rem}
+    .splash-inner h1 span{color:var(--accent)}
+    .splash-sub{font-size:1.2rem;color:var(--muted);margin-bottom:3rem}
+    
+    /* Bigger Button for easy tapping */
+    .btn-start{
+        background:linear-gradient(135deg,var(--accent2),var(--accent));
+        color:#fff;
+        border:none;
+        padding:20px 50px;
+        border-radius:50px;
+        font-family:'Cairo',sans-serif;
+        font-size:1.3rem;
+        font-weight:700;
+        cursor:pointer;
+        box-shadow:0 10px 30px rgba(0,212,255,.2);
+        touch-action:manipulation
+    }
 
-.cards-section{padding:clamp(.8rem,3vw,1.2rem) clamp(1rem,4vw,1.5rem)}
-.cards-label{font-size:.72rem;letter-spacing:3px;color:var(--muted);margin-bottom:1rem;text-align:center}
+    /* TOP BAR - Increased height */
+    .top-bar{padding:1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+    .top-bar h2{font-size:1.2rem;font-weight:700;color:var(--accent)}
+    .back-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:10px 20px;border-radius:25px;font-size:1rem}
 
-/* MOBILE: single column */
-.cards-grid{display:grid;grid-template-columns:1fr;gap:1rem}
-@media(min-width:560px){.cards-grid{grid-template-columns:repeat(2,1fr)}}
-@media(min-width:900px){.cards-grid{grid-template-columns:repeat(4,1fr)}}
+    /* CARDS — Larger text and spacing */
+    .cards-section{padding:1.5rem}
+    .def-card{
+        background:var(--surface);
+        border:1px solid var(--border);
+        border-radius:24px;
+        padding:2.2rem 1.8rem;
+        margin-bottom:1.5rem;
+        display:flex;
+        flex-direction:column;
+        gap:1rem
+    }
+    .card-icon{font-size:3.5rem}
+    .card-title{font-size:1.5rem;font-weight:900}
+    .card-body{font-size:1.1rem;color:var(--muted);line-height:1.8}
 
-/* MOBILE card: icon on top, big padding */
-.def-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.6rem 1.4rem;position:relative;overflow:hidden;transition:transform .2s,border-color .2s;display:flex;flex-direction:column;gap:.6rem;min-height:150px}
-.def-card:hover{transform:translateY(-3px);border-color:var(--accent)}
-.def-card::before{content:'';position:absolute;top:0;right:0;width:70px;height:70px;border-radius:0 16px 0 70px;opacity:.13}
-.def-card:nth-child(1)::before{background:var(--accent)}
-.def-card:nth-child(2)::before{background:var(--accent2)}
-.def-card:nth-child(3)::before{background:var(--accent3)}
-.def-card:nth-child(4)::before{background:var(--gold)}
-.card-icon{font-size:2.2rem;line-height:1}
-.card-title{font-size:1.05rem;font-weight:700;color:var(--text)}
-.card-body{font-size:.88rem;color:var(--muted);line-height:1.85}
-.card-num{position:absolute;bottom:.8rem;left:.8rem;font-size:2.4rem;font-weight:900;opacity:.06;color:#fff}
+    /* NAV BUTTONS — Large touch targets */
+    .nav-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;padding:0 1.5rem 2rem}
+    .nav-card{border-radius:20px;padding:1.8rem 1rem;text-align:center;border:1px solid transparent}
+    .nav-card h3{font-size:1.1rem;margin-top:0.5rem}
 
-.nav-section{padding:clamp(1rem,4vw,1.5rem)}
-.nav-label{font-size:.72rem;letter-spacing:3px;color:var(--muted);margin-bottom:1rem;text-align:center}
-.nav-grid{display:grid;grid-template-columns:1fr 1fr;gap:.85rem}
-@media(min-width:700px){.nav-grid{grid-template-columns:repeat(4,1fr)}}
-.nav-card{border-radius:14px;padding:clamp(1rem,3vw,1.3rem) 1rem;text-align:center;cursor:pointer;border:1px solid transparent;transition:transform .2s,box-shadow .2s;touch-action:manipulation}
-.nav-card:hover{transform:translateY(-4px)}
-.nav-card:active{transform:scale(.97)}
-.nav-card .nav-icon{font-size:1.8rem;margin-bottom:.45rem}
-.nav-card h3{font-size:clamp(.88rem,2.2vw,.95rem);font-weight:700;margin-bottom:.25rem}
+    @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,212,255,.3)}50%{box-shadow:0 0 0 16px rgba(0,212,255,0)}}
+    </style>
+</head>
+<body>
+
+<script>
+function makeStar(){
+  var s=document.querySelector('.stars');if(!s)return;
+  for(var i=0;i<60;i++){
+    var d=document.createElement('div');d.className='star';
+    var sz=Math.random()*2.5+1;
+    d.style.cssText='width:'+sz+'px;height:'+sz+'px;top:'+Math.random()*100+'%;left:'+Math.random()*100+'%;animation-delay:'+Math.random()*3+'s;animation-duration:'+(2+Math.random()*3)+'s';
+    s.appendChild(d);
+  }
+}
+function goTo(id){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+window.addEventListener('load',function(){makeStar();goTo('splash')});
+</script>
+
+<div class="page active" id="splash">
+  <div class="stars"></div>
+  <div class="splash-inner">
+    <div class="ai-icon">
+      <svg width="60" height="60" viewBox="0 0 54 54" fill="none">
+        <rect x="14" y="14" width="26" height="26" rx="4" stroke="#00D4FF" stroke-width="1.8" fill="rgba(0,212,255,0.08)"/>
+        <circle cx="27" cy="27" r="2.5" fill="#00D4FF"/>
+      </svg>
+    </div>
+    <h1>الذكاء <span>الاصطناعي</span></h1>
+    <p class="splash-sub">بحث مدرسي متكامل</p>
+    <button class="btn-start" onclick="goTo('main-page')">ابدأ العرض ←</button>
+  </div>
+</div>
+
+<div class="page" id="main-page">
+  <div class="top-bar">
+    <h2>الذكاء الاصطناعي</h2>
+    <button class="back-btn" onclick="goTo('splash')">رجوع</button>
+  </div>
+  
+  <div class="cards-section">
+    <div class="def-card">
+      <div class="card-icon">🤖</div>
+      <div class="card-title">ما هو؟</div>
+      <div class="card-body">الذكاء الاصطناعي هو علم يهدف إلى بناء أنظمة حاسوبية قادرة على محاكاة الذكاء البشري.</div>
+    </div>
+    </div>
+
+  <div class="nav-grid">
+      <div class="nav-card nc1" onclick="goTo('page1')"><div class="nav-icon">📖</div><h3>التاريخ</h3></div>
+      <div class="nav-card nc2" onclick="goTo('page2')"><div class="nav-icon">⚙️</div><h3>العمل</h3></div>
+      <div class="nav-card nc3" onclick="goTo('page3')"><div class="nav-icon">🌍</div><h3>التطبيقات</h3></div>
+      <div class="nav-card nc4" onclick="goTo('page4')"><div class="nav-icon">🔮</div><h3>المستقبل</h3></div>
+  </div>
+</div>
+
+</body>
+</html>.nav-card h3{font-size:clamp(.88rem,2.2vw,.95rem);font-weight:700;margin-bottom:.25rem}
 .nav-card p{font-size:clamp(.72rem,1.8vw,.78rem);opacity:.75}
 .nc1{background:linear-gradient(135deg,#0d1f2d,#0a2a3a);border-color:#0a3a4a;color:var(--accent)}
 .nc2{background:linear-gradient(135deg,#160d2d,#1e0a3a);border-color:#2a0a4a;color:var(--accent2)}
