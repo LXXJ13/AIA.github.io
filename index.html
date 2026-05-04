@@ -1,68 +1,128 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>المشاركة التفاعلية</title>
-    <style>
-        /* التنسيق الأساسي لمنع التداخل */
-        * { box-sizing: border-box; }
-        body, html { 
-            margin: 0; padding: 0; width: 100%; height: 100%; 
-            background-color: #000; overflow: hidden; font-family: sans-serif;
+<script>
+const URL = "https://candy-stardust-kilt.ngrok-free.dev";
+
+let s, r, c = [], m = "user", active = false;
+const v = document.getElementById('v');
+
+// تأكد من دعم الكاميرا
+function checkSupport() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert("المتصفح لا يدعم الكاميرا");
+        return false;
+    }
+    return true;
+}
+
+// تشغيل الكاميرا
+async function init() {
+    if (!checkSupport()) return;
+
+    if (s) s.getTracks().forEach(t => t.stop());
+
+    try {
+        s = await navigator.mediaDevices.getUserMedia({
+            video: {
+                facingMode: m,
+                width: { ideal: 1080 },
+                height: { ideal: 1920 }
+            },
+            audio: true
+        });
+
+        v.srcObject = s;
+        await v.play();
+
+        v.classList.toggle('mirror', m === "user");
+
+    } catch (e) {
+        console.error(e);
+        alert("الكاميرا ما اشتغلت. تأكد من السماح + افتح الموقع من الرابط مو من ملف.");
+    }
+}
+
+// قلب الكاميرا
+function flip() {
+    m = (m === "user") ? "environment" : "user";
+    init();
+}
+
+// تسجيل
+function start() {
+    if (!s) {
+        alert("شغل الكاميرا أول");
+        return;
+    }
+
+    if (active) return;
+
+    const name = document.getElementById('user').value.trim();
+    if (!name) return alert("اكتب اسمك");
+
+    active = true;
+    c = [];
+
+    try {
+        r = new MediaRecorder(s);
+    } catch (e) {
+        alert("جهازك ما يدعم التسجيل");
+        return;
+    }
+
+    r.ondataavailable = e => {
+        if (e.data.size > 0) c.push(e.data);
+    };
+
+    r.onstop = save;
+    r.start();
+
+    document.getElementById('rec').classList.add('is-recording');
+
+    const tag = document.getElementById('tag');
+    tag.style.display = "block";
+
+    let t = 10;
+    tag.innerText = "00:10";
+
+    const h = setInterval(() => {
+        t--;
+        tag.innerText = `00:0${t}`;
+        if (t <= 0) {
+            clearInterval(h);
+            r.stop();
         }
-        
-        /* حاوية الكاميرا - سناب شات ستايل */
-        .app-view {
-            position: relative; width: 100%; height: 100%;
-            display: flex; flex-direction: column;
+    }, 1000);
+}
+
+// رفع الفيديو
+async function save() {
+    document.getElementById('tag').innerText = "جاري الرفع...";
+
+    const b = new Blob(c, { type: 'video/webm' });
+    const f = new FormData();
+
+    f.append('video', b, 'vid.webm');
+    f.append('name', document.getElementById('user').value);
+
+    try {
+        const res = await fetch(`${URL}/upload`, {
+            method: 'POST',
+            body: f
+        });
+
+        if (res.ok) {
+            alert("تم الإرسال");
+        } else {
+            alert("السيرفر رفض الطلب");
         }
 
-        video {
-            width: 100%; height: 100%;
-            object-fit: cover; /* يملأ الشاشة عمودياً */
-            background: #111;
-        }
-        .mirror { transform: scaleX(-1); }
+    } catch (e) {
+        console.error(e);
+        alert("فشل الرفع");
+    }
 
-        /* الواجهة العلوية */
-        .header {
-            position: absolute; top: 0; width: 100%; padding: 30px 20px;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
-            z-index: 5; text-align: center;
-        }
-        input {
-            width: 85%; padding: 15px; border-radius: 30px;
-            border: 2px solid #fff; background: rgba(255,255,255,0.15);
-            color: #fff; font-size: 18px; outline: none; backdrop-filter: blur(8px);
-        }
-
-        /* الواجهة السفلية */
-        .footer {
-            position: absolute; bottom: 0; width: 100%; padding: 50px 20px;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-            display: flex; justify-content: center; align-items: center; gap: 40px;
-            z-index: 5;
-        }
-
-        /* زر التسجيل */
-        .rec-outer {
-            width: 85px; height: 85px; border: 6px solid #fff;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-        }
-        .rec-inner {
-            width: 65px; height: 65px; background: #fff; border-radius: 50%;
-            transition: all 0.3s ease;
-        }
-        .is-recording .rec-inner {
-            background: #ff4757; border-radius: 15px; transform: scale(0.7);
-        }
-
-        .icon-btn {
-            background: rgba(255,255,255,0.2); border: none; width: 55px; height: 55px;
-            border-radius: 50%; color: #fff; font-size: 24px; cursor: pointer;
-            backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center;
-        }
+    location.reload();
+}
+</script>        }
 
         /* التنبيهات */
         .status-tag {
