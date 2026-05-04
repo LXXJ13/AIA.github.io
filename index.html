@@ -1,166 +1,46 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مشاركة فيديو - مشروع المدرسة</title>
-    <style>
-        :root { --primary: #007bff; --success: #28a745; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f6; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .container { background: white; width: 90%; max-width: 450px; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
-        h2 { color: #333; margin-bottom: 20px; }
-        video { width: 100%; border-radius: 15px; background: #000; margin-bottom: 15px; border: 4px solid #eee; }
-        input { width: 100%; padding: 12px; margin-bottom: 15px; border: 2px solid #ddd; border-radius: 10px; font-size: 16px; box-sizing: border-box; }
-        input:focus { border-color: var(--primary); outline: none; }
-        .btn { background: var(--primary); color: white; border: none; padding: 15px; width: 100%; border-radius: 10px; font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        .btn:disabled { background: #ccc; cursor: not-allowed; }
-        #timer { font-size: 20px; color: red; font-weight: bold; margin-bottom: 10px; display: none; }
-        .status-msg { margin-top: 15px; font-weight: bold; padding: 10px; border-radius: 8px; display: none; }
-        .success { background: #d4edda; color: #155724; display: block; }
-        .error { background: #f8d7da; color: #721c24; display: block; }
-    </style>
-</head>
-<body>
-
-<div class="container">
-    <h2>🎥 سجل مشاركتك</h2>
-    <input type="text" id="nameInput" placeholder="أدخل اسمك هنا..." maxlength="30">
-    
-    <div id="timer">10 ثوانٍ متبقية</div>
-    <video id="preview" autoplay muted playsinline></video>
-    
-    <button id="actionBtn" class="btn">بدء التسجيل (10 ثوانٍ)</button>
-    <div id="status" class="status-msg"></div>
+<!-- في ملف index.html المرفوع على GitHub -->
+<div class="ui">
+    <input type="text" id="userName" placeholder="اسمك">
+    <video id="view" autoplay muted playsinline></video>
+    <button onclick="flip()">🔄 تبديل الكاميرا</button>
+    <button id="recBtn" onclick="startRec()">🔴 تسجيل 10 ثوانٍ</button>
 </div>
 
 <script>
-    // ⚠️ استبدل هذا بالرابط الذي يظهر لك في LocalTunnel
-    const SERVER_URL = "https://grumpy-lions-deny.loca.lt"; 
-
-    let mediaRecorder;
+    let mode = "user"; 
     let chunks = [];
-    const btn = document.getElementById('actionBtn');
-    const timer = document.getElementById('timer');
-    const status = document.getElementById('status');
+    let recorder;
 
-    // تشغيل الكاميرا فور فتح الصفحة
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-        .then(stream => {
-            document.getElementById('preview').srcObject = stream;
-            mediaRecorder = new MediaRecorder(stream);
-            
-            mediaRecorder.ondataavailable = e => chunks.push(e.data);
-            mediaRecorder.onstop = uploadVideo;
-        })
-        .catch(err => {
-            alert("عذراً، يجب السماح بالوصول للكاميرا والميكروفون للمشاركة.");
+    async function init(m) {
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: m, width: 640, height: 480 }, // ضغط الأبعاد لسرعة الرفع
+            audio: true
         });
+        document.getElementById('view').srcObject = stream;
+        // تقليل الجودة لضمان سرعة الرفع لـ 200 طالب
+        recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp8', bitsPerSecond: 1000000 }); 
+        recorder.ondataavailable = e => chunks.push(e.data);
+        recorder.onstop = upload;
+    }
 
-    btn.onclick = () => {
-        const name = document.getElementById('nameInput').value.trim();
-        if (!name) {
-            alert("الرجاء كتابة الاسم أولاً");
-            return;
-        }
+    function flip() {
+        mode = mode === "user" ? "environment" : "user";
+        init(mode);
+    }
 
-        startRecording();
-    };
-
-    function startRecording() {
+    function startRec() {
         chunks = [];
-        mediaRecorder.start();
-        btn.disabled = true;
-        timer.style.display = 'block';
-        status.style.display = 'none';
-
-        let timeLeft = 10;
-        timer.innerText = `متبقي: ${timeLeft} ثانية`;
-
-        const countdown = setInterval(() => {
-            timeLeft--;
-            timer.innerText = `متبقي: ${timeLeft} ثانية`;
-            if (timeLeft <= 0) {
-                clearInterval(countdown);
-                mediaRecorder.stop();
-                timer.style.display = 'none';
-                btn.innerText = "جاري المعالجة...";
-            }
-        }, 1000);
+        recorder.start();
+        setTimeout(() => recorder.stop(), 10000);
     }
 
-    async function uploadVideo() {
-        status.className = "status-msg";
-        status.style.display = "block";
-        status.innerText = "🚀 جاري الرفع الآن...";
-
-        const blob = new Blob(chunks, { type: 'video/mp4' });
-        const formData = new FormData();
-        formData.append('video', blob);
-        formData.append('name', document.getElementById('nameInput').value);
-
-        try {
-            const response = await fetch(`${SERVER_URL}/upload`, {
-                method: 'POST',
-                body: formData
-            });
-
-            if (response.ok) {
-                const result = await response.json();
-                status.className = "status-msg success";
-                status.innerText = `✅ تم الإرسال! ترتيبك في الطابور: ${result.position}`;
-                btn.innerText = "تسجيل فيديو آخر";
-            } else {
-                throw new Error();
-            }
-        } catch (err) {
-            status.className = "status-msg error";
-            status.innerText = "❌ حدث خطأ في الرفع. تأكد من اتصالك بالإنترنت.";
-            btn.innerText = "حاول مرة أخرى";
-        }
-        btn.disabled = false;
+    async function upload() {
+        const blob = new Blob(chunks, {type: 'video/mp4'});
+        const fd = new FormData();
+        fd.append('video', blob);
+        fd.append('name', document.getElementById('userName').value);
+        await fetch("https://candy-stardust-kilt.ngrok-free.dev", { method: 'POST', body: fd });
+        alert("تم الإرسال!");
     }
+    init(mode);
 </script>
-
-</body>
-    <!-- أضف هذا الزر فوق الفيديو في ملف index.html -->
-<button id="flipBtn" class="btn" style="background:#6c757d; margin-bottom:10px;">🔄 تبديل الكاميرا</button>
-
-<script>
-    let currentFacingMode = 'user'; // 'user' للأمامية و 'environment' للخلفية
-    let currentStream = null;
-
-    async function startCamera(mode) {
-        if (currentStream) {
-            currentStream.getTracks().forEach(track => track.stop());
-        }
-
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ 
-                video: { facingMode: mode }, 
-                audio: true 
-            });
-            currentStream = stream;
-            const videoElement = document.getElementById('preview');
-            videoElement.srcObject = stream;
-            
-            // لضمان عدم تجمد الصورة في الآيفون
-            videoElement.play(); 
-            
-            mediaRecorder = new MediaRecorder(stream);
-            mediaRecorder.ondataavailable = e => chunks.push(e.data);
-            mediaRecorder.onstop = uploadVideo;
-        } catch (err) {
-            alert("خطأ في تشغيل الكاميرا: " + err);
-        }
-    }
-
-    // زر تبديل الكاميرا
-    document.getElementById('flipBtn').onclick = () => {
-        currentFacingMode = (currentFacingMode === 'user') ? 'environment' : 'user';
-        startCamera(currentFacingMode);
-    };
-
-    // تشغيل الكاميرا لأول مرة
-    startCamera(currentFacingMode);
-</script>
-</html>
