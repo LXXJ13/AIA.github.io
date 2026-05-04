@@ -1,70 +1,156 @@
-async function initCamera() {
-    if (stream) stream.getTracks().forEach(t => t.stop());
-    try {
-        // استخدام أبعاد مرنة لمنع الزوم الإجباري
-        const constraints = {
-            video: { 
-                facingMode: currentMode,
-                // نطلب عرضاً وارتفاعاً يتناسب مع الجوالات بدون إجبار المتصفح على دقة محددة قد تسبب زوم
-                width: { min: 480, ideal: 720, max: 1080 },
-                height: { min: 640, ideal: 1280, max: 1920 },
-                aspectRatio: { ideal: 0.5625 } // نسبة 9:16
-            },
-            audio: true
-        };
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>تسجيل المشاركة</title>
+    <style>
+        body {
+            margin: 0; background: #000; color: white;
+            font-family: sans-serif; height: 100vh; overflow: hidden;
+            display: flex; flex-direction: column;
+        }
+        .camera-box {
+            position: relative; flex: 1; width: 100%;
+            background: #111; display: flex; align-items: center; justify-content: center;
+        }
+        video {
+            width: 100%; height: 100%;
+            /* التغيير هنا: contain بدلاً من cover يمنع الزوم الإجباري */
+            object-fit: contain; 
+            background: #000;
+        }
+        .mirror { transform: scaleX(-1); }
 
-        stream = await navigator.mediaDevices.getUserMedia(constraints);
-        videoEl.srcObject = stream;
-        
-        // منع الزوم البصري عبر CSS
-        videoEl.style.objectFit = "cover"; 
-        
-        videoEl.className = (currentMode === "user") ? "mirror" : "";
-    } catch (err) {
-        console.error("Camera error:", err);
-        // محاولة تشغيل الكاميرا بإعدادات أساسية إذا فشلت الإعدادات المتقدمة
-        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        videoEl.srcObject = stream;
-    }
-}
-        /* واجهة التحكم السفلية */
-        .bottom-ui {
-            position: absolute;
-            bottom: 40px;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 30px;
-            z-index: 10;
+        .ui-top {
+            position: absolute; top: 20px; width: 100%;
+            display: flex; justify-content: center; z-index: 10;
+        }
+        input {
+            padding: 12px 20px; border-radius: 25px; border: 2px solid #fff;
+            background: rgba(0,0,0,0.5); color: white; width: 70%; text-align: center;
+        }
+        .ui-bottom {
+            position: absolute; bottom: 30px; width: 100%;
+            display: flex; justify-content: center; align-items: center; gap: 20px; z-index: 10;
+        }
+        .rec-btn {
+            width: 70px; height: 70px; border: 4px solid white; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+        }
+        .rec-inner { width: 55px; height: 55px; background: white; border-radius: 50%; transition: 0.3s; }
+        .recording .rec-inner { background: #ff4444; border-radius: 10px; transform: scale(0.8); }
+
+        .flip-btn {
+            width: 45px; height: 45px; background: rgba(255,255,255,0.2);
+            border: none; border-radius: 50%; color: white; font-size: 20px; cursor: pointer;
+        }
+        .timer-badge {
+            position: absolute; top: 80px; background: #ff4444;
+            padding: 5px 15px; border-radius: 20px; font-weight: bold; display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ui-top">
+        <input type="text" id="studentName" placeholder="أدخل اسمك هنا...">
+    </div>
+
+    <div class="camera-box">
+        <div id="timer" class="timer-badge">00:10</div>
+        <video id="preview" autoplay muted playsinline class="mirror"></video>
+    </div>
+
+    <div class="ui-bottom">
+        <button class="flip-btn" onclick="flipCamera()">🔄</button>
+        <div class="rec-btn" id="recBtn" onclick="toggleRecording()">
+            <div class="rec-inner" id="recInner"></div>
+        </div>
+        <div style="width:45px"></div>
+    </div>
+
+    <script>
+        const NGROK_URL = "https://candy-stardust-kilt.ngrok-free.dev";
+        let stream, recorder, chunks = [];
+        let currentMode = "user";
+        let isRecording = false;
+
+        const videoEl = document.getElementById('preview');
+
+        async function initCamera() {
+            if (stream) stream.getTracks().forEach(t => t.stop());
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: { 
+                        facingMode: currentMode,
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    },
+                    audio: true
+                });
+                videoEl.srcObject = stream;
+                videoEl.classList.toggle('mirror', currentMode === "user");
+            } catch (err) {
+                alert("خطأ في الكاميرا: " + err);
+            }
         }
 
-        .record-btn-outline {
-            width: 80px;
-            height: 80px;
-            border: 5px solid white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            background: transparent;
+        function flipCamera() {
+            currentMode = (currentMode === "user") ? "environment" : "user";
+            initCamera();
         }
 
-        .record-btn-inner {
-            width: 60px;
-            height: 60px;
-            background: white;
-            border-radius: 50%;
-            transition: 0.3s;
+        function toggleRecording() {
+            if (isRecording) return;
+            const name = document.getElementById('studentName').value.trim();
+            if (!name) return alert("الرجاء كتابة الاسم!");
+            startRecording();
         }
 
-        .recording .record-btn-inner {
-            background: var(--danger);
-            transform: scale(0.8);
-            border-radius: 10px;
+        function startRecording() {
+            isRecording = true;
+            chunks = [];
+            recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp8', videoBitsPerSecond: 2500000 });
+            recorder.ondataavailable = e => chunks.push(e.data);
+            recorder.onstop = upload;
+            recorder.start();
+
+            document.getElementById('recBtn').classList.add('recording');
+            const timerEl = document.getElementById('timer');
+            timerEl.style.display = "block";
+
+            let sec = 10;
+            const interval = setInterval(() => {
+                sec--;
+                timerEl.innerText = `00:0${sec}`;
+                if (sec <= 0) {
+                    clearInterval(interval);
+                    recorder.stop();
+                }
+            }, 1000);
         }
 
+        async function upload() {
+            document.getElementById('timer').innerText = "جاري الرفع...";
+            const blob = new Blob(chunks, { type: 'video/webm' });
+            const fd = new FormData();
+            fd.append('video', blob, 'video.webm');
+            fd.append('name', document.getElementById('studentName').value);
+
+            try {
+                await fetch(`${NGROK_URL}/upload`, { method: 'POST', body: fd });
+                alert("✅ تم الرفع بنجاح!");
+            } catch (e) {
+                alert("❌ فشل الرفع");
+            }
+            location.reload(); // إعادة تشغيل الكاميرا والواجهة
+        }
+
+        initCamera();
+    </script>
+</body>
+</html>
         .flip-btn {
             background: rgba(255,255,255,0.2);
             border: none;
