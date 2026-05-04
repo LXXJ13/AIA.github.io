@@ -1,37 +1,245 @@
-<video id="v" autoplay muted playsinline style="width:100%; border-radius:15px;"></video>
-<button id="btn" onclick="start()">🔴 ابدأ تسجيل 10 ثوانٍ</button>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Snap Participation</title>
+    <style>
+        :root {
+            --snap-yellow: #FFFC00;
+            --snap-blue: #00B6FF;
+            --danger: #ff4444;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background: #000;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+            color: white;
+        }
+
+        /* حاوية الفيديو بنظام سناب شات (ملء الشاشة) */
+        .camera-container {
+            position: relative;
+            flex: 1;
+            width: 100%;
+            overflow: hidden;
+            background: #222;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* ملء الشاشة عمودياً */
+        }
+
+        .mirror { transform: scaleX(-1); }
+
+        /* واجهة المستخدم العلوية */
+        .top-ui {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.5), transparent);
+            z-index: 10;
+            box-sizing: border-box;
+        }
+
+        input {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            border-radius: 25px;
+            padding: 12px 20px;
+            color: white;
+            width: 80%;
+            font-size: 16px;
+            outline: none;
+            backdrop-filter: blur(5px);
+        }
+
+        input::placeholder { color: #ddd; }
+
+        /* واجهة التحكم السفلية */
+        .bottom-ui {
+            position: absolute;
+            bottom: 40px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            z-index: 10;
+        }
+
+        .record-btn-outline {
+            width: 80px;
+            height: 80px;
+            border: 5px solid white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background: transparent;
+        }
+
+        .record-btn-inner {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        .recording .record-btn-inner {
+            background: var(--danger);
+            transform: scale(0.8);
+            border-radius: 10px;
+        }
+
+        .flip-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+        }
+
+        .timer-badge {
+            position: absolute;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--danger);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-ui">
+        <input type="text" id="studentName" placeholder="أدخل اسمك هنا...">
+    </div>
+
+    <div class="camera-container" id="camBox">
+        <div id="timer" class="timer-badge">00:10</div>
+        <video id="preview" autoplay muted playsinline class="mirror"></video>
+    </div>
+
+    <div class="bottom-ui">
+        <button class="flip-btn" onclick="flipCamera()">🔄</button>
+        
+        <div class="record-btn-outline" id="recBtnContainer" onclick="toggleRecording()">
+            <div class="record-btn-inner" id="recBtnInner"></div>
+        </div>
+
+        <div style="width: 50px;"></div> <!-- توازن بصري -->
+    </div>
 
 <script>
-    const NGROK_URL = "https://candy-stardust-kilt.ngrok-free.dev";
-    let recorder, chunks = [];
+    const SERVER_URL = "https://candy-stardust-kilt.ngrok-free.dev";
+    let stream, recorder, chunks = [];
+    let currentMode = "user";
+    let isRecording = false;
 
-    async function setup() {
-        const stream = await navigator.mediaDevices.getUserMedia({ 
-            video: { width: 480, height: 640, facingMode: "user" }, 
-            audio: true 
-        });
-        document.getElementById('v').srcObject = stream;
-        recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp8', bitsPerSecond: 800000 });
-        recorder.ondataavailable = e => chunks.push(e.data);
-        recorder.onstop = send;
+    const videoEl = document.getElementById('preview');
+    const timerEl = document.getElementById('timer');
+    const recInner = document.getElementById('recBtnInner');
+    const recContainer = document.getElementById('recBtnContainer');
+
+    async function initCamera() {
+        if (stream) stream.getTracks().forEach(t => t.stop());
+        try {
+            // إعدادات الأبعاد العمودية 9:16
+            stream = await navigator.mediaDevices.getUserMedia({
+                video: { 
+                    facingMode: currentMode,
+                    width: { ideal: 720 },
+                    height: { ideal: 1280 },
+                    aspectRatio: 0.5625 // (9/16)
+                },
+                audio: true
+            });
+            videoEl.srcObject = stream;
+            videoEl.className = (currentMode === "user") ? "mirror" : "";
+        } catch (err) {
+            alert("خطأ في الكاميرا: " + err);
+        }
     }
 
-    function start() {
-        chunks = [];
-        recorder.start();
-        document.getElementById('btn').innerText = "جاري التسجيل...";
-        setTimeout(() => recorder.stop(), 10000);
+    function flipCamera() {
+        currentMode = (currentMode === "user") ? "environment" : "user";
+        initCamera();
     }
 
-    async function send() {
-        const blob = new Blob(chunks, { type: 'video/mp4' });
-        const fd = new FormData();
-        fd.append('video', blob, 'video.mp4');
-        fd.append('name', prompt("أدخل اسمك:"));
+    function toggleRecording() {
+        if (isRecording) return;
         
-        await fetch(`${NGROK_URL}/upload`, { method: 'POST', body: fd });
-        alert("وصل فيديو المشاركة، شكراً لك!");
-        document.getElementById('btn').innerText = "🔴 سجل مرة أخرى";
+        const name = document.getElementById('studentName').value.trim();
+        if (!name) return alert("اكتب اسمك أولاً!");
+
+        startRecording();
     }
-    setup();
+
+    function startRecording() {
+        isRecording = true;
+        chunks = [];
+        const options = { mimeType: 'video/webm;codecs=vp8', videoBitsPerSecond: 3000000 };
+        recorder = new MediaRecorder(stream, options);
+
+        recorder.ondataavailable = e => chunks.push(e.data);
+        recorder.onstop = upload;
+
+        recorder.start();
+        
+        recContainer.classList.add('recording');
+        timerEl.style.display = "block";
+
+        let seconds = 10;
+        const countdown = setInterval(() => {
+            seconds--;
+            timerEl.innerText = `00:0${seconds}`;
+            if (seconds <= 0) {
+                clearInterval(countdown);
+                recorder.stop();
+            }
+        }, 1000);
+    }
+
+    async function upload() {
+        timerEl.innerText = "جاري الرفع...";
+        const blob = new Blob(chunks, { type: 'video/webm' });
+        const fd = new FormData();
+        fd.append('video', blob, 'video.webm');
+        fd.append('name', document.getElementById('studentName').value);
+
+        try {
+            await fetch(`${SERVER_URL}/upload`, { method: 'POST', body: fd });
+            alert("✅ تم الرفع بنجاح!");
+        } catch (e) {
+            alert("❌ فشل الاتصال بالسيرفر");
+        }
+
+        isRecording = false;
+        recContainer.classList.remove('recording');
+        timerEl.style.display = "none";
+        timerEl.innerText = "00:10";
+    }
+
+    initCamera();
 </script>
+</body>
+</html>
