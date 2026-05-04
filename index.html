@@ -95,6 +95,264 @@
 
         <video id="v" autoplay muted playsinline class="mirror"></video>
 
+        <button id="cameraStartBtn" class="camera-start-btn" onclick="startCamera()">📷 اضغط لبدء الكاميرا</button>
+
+        <div class="footer" id="controlsFooter">
+            <button class="icon-btn" onclick="flip()">🔄</button>
+            <div class="rec-outer" id="rec" onclick="startRecording()">
+                <div class="rec-inner"></div>
+            </div>
+            <div style="width: 55px;"></div>
+        </div>
+    </div>
+
+<script>
+    const URL = "https://candy-stardust-kilt.ngrok-free.dev";
+    let stream = null;
+    let facingMode = "user";
+    let mediaRecorder, recordedChunks = [];
+    let recordingActive = false;
+    const video = document.getElementById('v');
+    const controlsFooter = document.getElementById('controlsFooter');
+    const cameraStartBtn = document.getElementById('cameraStartBtn');
+
+    // طلب الكاميرا بدقة Full HD عمودي
+    async function startCamera() {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({
+                video: {
+                    facingMode: facingMode,
+                    width: { ideal: 1080 },
+                    height: { ideal: 1920 },
+                    frameRate: { ideal: 30 }
+                },
+                audio: true
+            });
+            video.srcObject = stream;
+            video.classList.toggle('mirror', facingMode === "user");
+            
+            cameraStartBtn.classList.add('hidden');
+            controlsFooter.classList.add('visible');
+        } catch (err) {
+            console.error(err);
+            alert("عذراً، تعذر الوصول إلى الكاميرا. تأكد من السماح بالوصول.");
+        }
+    }
+
+    async function flip() {
+        if (recordingActive) {
+            alert("لا يمكن قلب الكاميرا أثناء التسجيل");
+            return;
+        }
+        facingMode = (facingMode === "user") ? "environment" : "user";
+        await startCamera();
+    }
+
+    // تسجيل بجودة أولية عالية
+    async function startRecording() {
+        if (recordingActive) return;
+        const name = document.getElementById('user').value.trim();
+        if (!name) return alert("يرجى كتابة الاسم أولاً");
+        if (!stream) return alert("الرجاء تشغيل الكاميرا أولاً");
+
+        recordingActive = true;
+        recordedChunks = [];
+
+        const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')
+                        ? 'video/webm;codecs=vp9,opus'
+                        : MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')
+                        ? 'video/webm;codecs=vp8,opus'
+                        : 'video/webm';
+
+        mediaRecorder = new MediaRecorder(stream, { 
+            mimeType: mimeType,
+            videoBitsPerSecond: 8000000  // 8 Mbps جودة أولية عالية
+        });
+        mediaRecorder.ondataavailable = e => recordedChunks.push(e.data);
+        mediaRecorder.onstop = () => {
+            const rawBlob = new Blob(recordedChunks, { type: 'video/webm' });
+            compressAndUpload(rawBlob);
+        };
+        mediaRecorder.start();
+
+        document.getElementById('rec').classList.add('is-recording');
+        const tag = document.getElementById('tag');
+        tag.style.display = "block";
+        let count = 10;
+        tag.innerText = `00:${count}`;
+        const timer = setInterval(() => {
+            count--;
+            tag.innerText = `00:0${count}`;
+            if (count <= 0) {
+                clearInterval(timer);
+                mediaRecorder.stop();
+                recordingActive = false;
+                document.getElementById('rec').classList.remove('is-recording');
+            }
+        }, 1000);
+    }
+
+    // ضغط الفيديو باستخدام Canvas + AudioContext ثم الرفع
+    async function compressAndUpload(originalBlob) {
+        const tag = document.getElementById('tag');
+        tag.innerText = "جاري الضغط...";
+        tag.style.display = "block";
+
+        try {
+            const compressedBlob = await compressVideo(originalBlob);
+            // رفع المقطع المضغوط
+            const name = document.getElementById('user').value;
+            const formData = new FormData();
+            formData.append('video', compressedBlob, 'vid.webm');
+            formData.append('name', name);
+
+            tag.innerText = "جاري الرفع...";
+            const response = await fetch(`${URL}/upload`, { method: 'POST', body: formData });
+            if (response.ok) {
+                alert("تم الإرسال بنجاح!");
+            } else {
+                alert("فشل الرفع، حاول مرة أخرى.");
+            }
+        } catch (e) {
+            console.error(e);
+            alert("حدث خطأ أثناء الضغط أو الرفع.");
+        }
+        location.reload();
+    }
+
+    // دالة الضغط: إخراج فيديو بدقة 720p ومعدل بت 2.5 Mbps
+    function compressVideo(inputBlob) {
+        return new Promise((resolve, reject) => {
+            const videoEl = document.createElement('video');
+            videoEl.src = URL.createObjectURL(inputBlob);
+            videoEl.muted = false; // للسماح بالصوت
+            videoEl.preload = 'auto';
+            videoEl.playsInline = true;
+
+            videoEl.onloadedmetadata = async () => {
+                const duration = videoEl.duration;
+                const originalWidth = videoEl.videoWidth;
+                const originalHeight = videoEl.videoHeight;
+
+                // الهدف أقصى ارتفاع 720 (نحافظ على النسبة)
+                const targetHeight = 720;
+                const scale = targetHeight / originalHeight;
+                const targetWidth = Math.round(originalWidth * scale);
+
+                // إعداد Canvas
+                const canvas = document.createElement('canvas');
+                canvas.width = targetWidth;
+                canvas.height = targetHeight;
+                const ctx = canvas.getContext('2d');
+
+                // الحصول على مسار صوتي من الفيديو
+                const audioContext = new AudioContext();
+                const source = audioContext.createMediaElementSource(videoEl);
+                const audioDestination = audioContext.createMediaStreamDestination();
+                source.connect(audioDestination);
+                // لا نوصل إلى السماعات حتى لا يصدر صوت
+                // source.connect(audioContext.destination); // غير ضروري
+
+                // دمج المسارين
+                const combinedStream = new MediaStream([
+                    ...canvas.captureStream(30).getVideoTracks(),
+                    ...audioDestination.stream.getAudioTracks()
+                ]);
+
+                // إعداد مسجل الضغط
+                const compressedChunks = [];
+                const mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')
+                            ? 'video/webm;codecs=vp9,opus'
+                            : MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')
+                            ? 'video/webm;codecs=vp8,opus'
+                            : 'video/webm';
+
+                const recorder = new MediaRecorder(combinedStream, {
+                    mimeType: mime,
+                    videoBitsPerSecond: 2500000  // 2.5 Mbps للضغط
+                });
+
+                recorder.ondataavailable = e => compressedChunks.push(e.data);
+                recorder.onstop = () => {
+                    const finalBlob = new Blob(compressedChunks, { type: 'video/webm' });
+                    audioContext.close();
+                    URL.revokeObjectURL(videoEl.src);
+                    resolve(finalBlob);
+                };
+
+                recorder.onerror = (err) => {
+                    audioContext.close();
+                    URL.revokeObjectURL(videoEl.src);
+                    reject(err);
+                };
+
+                // رسم الإطارات أثناء التشغيل
+                const drawFrame = () => {
+                    if (videoEl.paused || videoEl.ended) return;
+                    ctx.drawImage(videoEl, 0, 0, targetWidth, targetHeight);
+                    requestAnimationFrame(drawFrame);
+                };
+
+                videoEl.play().then(() => {
+                    recorder.start();
+                    drawFrame();
+                    videoEl.onended = () => {
+                        recorder.stop();
+                    };
+                    // احتياط إذا لم ينتهي الفيديو تلقائياً
+                    setTimeout(() => {
+                        if (recorder.state !== 'inactive') {
+                            recorder.stop();
+                        }
+                    }, duration * 1000 + 500);
+                }).catch(e => {
+                    audioContext.close();
+                    reject(e);
+                });
+            };
+
+            videoEl.onerror = (e) => {
+                URL.revokeObjectURL(videoEl.src);
+                reject(e);
+            };
+        });
+    }
+</script>
+</body>
+</html>            transform: translate(-50%, -50%);
+            background: rgba(255,255,255,0.25);
+            backdrop-filter: blur(10px);
+            border: 2px solid white;
+            color: white;
+            padding: 18px 36px;
+            border-radius: 40px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s;
+        }
+        .camera-start-btn:hover {
+            background: rgba(255,255,255,0.4);
+        }
+        .camera-start-btn.hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-view">
+        <div id="tag" class="status-tag">00:10</div>
+        
+        <div class="header">
+            <input type="text" id="user" placeholder="أدخل اسمك الثلاثي...">
+        </div>
+
+        <video id="v" autoplay muted playsinline class="mirror"></video>
+
         <!-- زر بدء الكاميرا أولاً -->
         <button id="cameraStartBtn" class="camera-start-btn" onclick="startCamera()">📷 اضغط لبدء الكاميرا</button>
 
