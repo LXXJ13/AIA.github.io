@@ -3,54 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل فيديو المدرسة</title>
+    <title>مشروع الطابور التفاعلي</title>
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 20px; background: #f0f2f5; }
-        .box { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
-        video { width: 100%; border-radius: 10px; background: #000; margin: 10px 0; }
-        .btn { background: #007bff; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; cursor: pointer; font-size: 18px; }
-        input { width: 90%; padding: 12px; margin-bottom: 10px; border-radius: 8px; border: 1px solid #ddd; }
+        body { font-family: sans-serif; text-align: center; background: #f0f2f5; padding: 20px; }
+        .card { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
+        video { width: 100%; border-radius: 15px; background: #000; margin: 15px 0; border: 3px solid #007bff; }
+        input { width: 90%; padding: 12px; margin-bottom: 15px; border-radius: 10px; border: 1px solid #ddd; font-size: 16px; }
+        .btn { background: #007bff; color: white; border: none; padding: 15px; width: 100%; border-radius: 10px; font-size: 18px; cursor: pointer; }
+        .btn:disabled { background: #ccc; }
+        #status { margin-top: 15px; font-weight: bold; color: #555; }
     </style>
 </head>
 <body>
-    <div class="box">
-        <h2>🎥 شاركنا الآن</h2>
-        <input type="text" id="name" placeholder="ادخل اسمك هنا">
+    <div class="card">
+        <h2>🎥 سجل فيديو للمشاركة</h2>
+        <input type="text" id="studentName" placeholder="أدخل اسمك الثلاثي">
         <video id="preview" autoplay muted playsinline></video>
-        <button id="btn" class="btn">بدأ التسجيل (10 ثوانٍ)</button>
-        <p id="msg"></p>
+        <button id="recordBtn" class="btn">ابدأ التسجيل (10 ثوانٍ)</button>
+        <div id="status"></div>
     </div>
 
     <script>
-        const SERVER_URL = https://heavy-years-listen.loca.lt; 
+        const SERVER_URL = https://grumpy-lions-deny.loca.lt; // ضعه هنا لاحقاً
         let mediaRecorder, chunks = [];
 
-        navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(s => {
-            document.getElementById('preview').srcObject = s;
-            mediaRecorder = new MediaRecorder(s);
+        navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
+            document.getElementById('preview').srcObject = stream;
+            mediaRecorder = new MediaRecorder(stream);
             mediaRecorder.ondataavailable = e => chunks.push(e.data);
-            mediaRecorder.onstop = upload;
-        });
+            mediaRecorder.onstop = uploadVideo;
+        }).catch(() => alert("يجب السماح بالكاميرا للعمل!"));
 
-        document.getElementById('btn').onclick = () => {
-            if(!document.getElementById('name').value) return alert("اكتب اسمك!");
+        document.getElementById('recordBtn').onclick = () => {
+            const name = document.getElementById('studentName').value;
+            if(!name) return alert("الرجاء إدخال اسمك!");
+            
             chunks = [];
             mediaRecorder.start();
-            document.getElementById('btn').disabled = true;
-            document.getElementById('btn').innerText = "جاري التسجيل... ⏳";
-            setTimeout(() => mediaRecorder.stop(), 10000);
+            document.getElementById('recordBtn').disabled = true;
+            document.getElementById('recordBtn').innerText = "جاري التسجيل... ⏳";
+            
+            setTimeout(() => {
+                mediaRecorder.stop();
+                document.getElementById('recordBtn').innerText = "تم التسجيل! جاري الرفع...";
+            }, 10000);
         };
 
-        async function upload() {
-            document.getElementById('msg').innerText = "جاري الرفع... 🚀";
-            const fd = new FormData();
-            fd.append('video', new Blob(chunks, {type:'video/mp4'}));
-            fd.append('name', document.getElementById('name').value);
+        async function uploadVideo() {
+            document.getElementById('status').innerText = "🚀 جاري الإرسال للسيرفر...";
+            const blob = new Blob(chunks, { type: 'video/mp4' });
+            const formData = new FormData();
+            formData.append('video', blob);
+            formData.append('name', document.getElementById('studentName').value);
 
-            await fetch(`${SERVER_URL}/upload`, { method: 'POST', body: fd });
-            document.getElementById('msg').innerText = "تم الإرسال بنجاح! ✅";
-            document.getElementById('btn').disabled = false;
-            document.getElementById('btn').innerText = "تسجيل فيديو آخر؟";
+            try {
+                const res = await fetch(`${SERVER_URL}/upload`, { method: 'POST', body: formData });
+                const data = await res.json();
+                document.getElementById('status').innerText = `✅ تم الاستلام! ترتيبك: ${data.position}`;
+                document.getElementById('recordBtn').disabled = false;
+                document.getElementById('recordBtn').innerText = "إرسال مقطع آخر؟";
+            } catch (err) {
+                document.getElementById('status').innerText = "❌ فشل الإرسال، تأكد من الاتصال.";
+                document.getElementById('recordBtn').disabled = false;
+            }
         }
     </script>
 </body>
