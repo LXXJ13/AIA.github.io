@@ -3,68 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>تسجيل المشاركة</title>
+    <title>المشاركة التفاعلية</title>
     <style>
-        body { margin: 0; background: #000; color: white; font-family: sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-        .cam-container { position: relative; flex: 1; display: flex; align-items: center; justify-content: center; background: #111; }
-        video { width: 100%; height: 100%; object-fit: cover; }
+        /* التنسيق الأساسي لمنع التداخل */
+        * { box-sizing: border-box; }
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            background-color: #000; overflow: hidden; font-family: sans-serif;
+        }
+        
+        /* حاوية الكاميرا - سناب شات ستايل */
+        .app-view {
+            position: relative; width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+        }
+
+        video {
+            width: 100%; height: 100%;
+            object-fit: cover; /* يملأ الشاشة عمودياً */
+            background: #111;
+        }
         .mirror { transform: scaleX(-1); }
-        .ui-overlay { position: absolute; width: 100%; height: 100%; pointer-events: none; display: flex; flex-direction: column; justify-content:空间-between; }
-        .top-bar { pointer-events: auto; padding: 20px; text-align: center; background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent); }
-        input { padding: 12px 20px; border-radius: 25px; border: 2px solid #fff; background: rgba(255,255,255,0.2); color: white; width: 80%; outline: none; backdrop-filter: blur(5px); }
-        .bottom-bar { pointer-events: auto; padding: 40px; display: flex; justify-content: center; align-items: center; gap: 30px; background: linear-gradient(to top, rgba(0,0,0,0.7), transparent); }
-        .rec-btn { width: 75px; height: 75px; border: 5px solid white; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .rec-circle { width: 55px; height: 55px; background: white; border-radius: 50%; transition: 0.3s; }
-        .recording .rec-circle { background: #ff4444; border-radius: 10px; transform: scale(0.7); }
-        .flip-btn { background: rgba(255,255,255,0.2); border: none; width: 50px; height: 50px; border-radius: 50%; color: white; font-size: 20px; cursor: pointer; backdrop-filter: blur(5px); }
-        .timer { position: absolute; top: 100px; left: 50%; transform: translateX(-50%); background: #ff4444; padding: 5px 15px; border-radius: 20px; font-weight: bold; display: none; }
+
+        /* الواجهة العلوية */
+        .header {
+            position: absolute; top: 0; width: 100%; padding: 30px 20px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+            z-index: 5; text-align: center;
+        }
+        input {
+            width: 85%; padding: 15px; border-radius: 30px;
+            border: 2px solid #fff; background: rgba(255,255,255,0.15);
+            color: #fff; font-size: 18px; outline: none; backdrop-filter: blur(8px);
+        }
+
+        /* الواجهة السفلية */
+        .footer {
+            position: absolute; bottom: 0; width: 100%; padding: 50px 20px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            display: flex; justify-content: center; align-items: center; gap: 40px;
+            z-index: 5;
+        }
+
+        /* زر التسجيل */
+        .rec-outer {
+            width: 85px; height: 85px; border: 6px solid #fff;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        }
+        .rec-inner {
+            width: 65px; height: 65px; background: #fff; border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        .is-recording .rec-inner {
+            background: #ff4757; border-radius: 15px; transform: scale(0.7);
+        }
+
+        .icon-btn {
+            background: rgba(255,255,255,0.2); border: none; width: 55px; height: 55px;
+            border-radius: 50%; color: #fff; font-size: 24px; cursor: pointer;
+            backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center;
+        }
+
+        /* التنبيهات */
+        .status-tag {
+            position: absolute; top: 110px; left: 50%; transform: translateX(-50%);
+            background: #ff4757; color: #fff; padding: 6px 20px; border-radius: 20px;
+            font-weight: bold; font-size: 14px; display: none; z-index: 6;
+        }
     </style>
 </head>
 <body>
 
-    <div class="cam-container">
-        <video id="preview" autoplay muted playsinline class="mirror"></video>
-        <div id="status" class="timer">00:10</div>
+    <div class="app-view">
+        <div id="tag" class="status-tag">00:10</div>
         
-        <div class="ui-overlay">
-            <div class="top-bar">
-                <input type="text" id="studentName" placeholder="اكتب اسمك هنا...">
+        <div class="header">
+            <input type="text" id="user" placeholder="أدخل اسمك الثلاثي...">
+        </div>
+
+        <video id="v" autoplay muted playsinline class="mirror"></video>
+
+        <div class="footer">
+            <button class="icon-btn" onclick="flip()">🔄</button>
+            
+            <div class="rec-outer" id="rec" onclick="start()">
+                <div class="rec-inner"></div>
             </div>
-            <div class="bottom-bar">
-                <button class="flip-btn" onclick="flipCamera()">🔄</button>
-                <div class="rec-btn" id="btnContainer" onclick="handleAction()">
-                    <div class="rec-circle" id="btnInner"></div>
-                </div>
-                <div style="width: 50px;"></div>
-            </div>
+
+            <div style="width: 55px;"></div>
         </div>
     </div>
 
 <script>
-    const NGROK_URL = "https://candy-stardust-kilt.ngrok-free.dev";
-    let stream, recorder, chunks = [], currentMode = "user", isRecording = false;
-    const videoEl = document.getElementById('preview');
+    // الرابط الخاص بك
+    const URL = "https://candy-stardust-kilt.ngrok-free.dev";
+    
+    let s, r, c = [], m = "user", active = false;
+    const v = document.getElementById('v');
 
-    async function startCam() {
-        if (stream) {
-            stream.getTracks().forEach(t => t.stop());
-        }
-        
-        // إعدادات مرنة جداً لتجنب خطأ NotReadableError
-        const constraints = {
-            video: { facingMode: currentMode },
-            audio: true
-        };
-
+    // وظيفة تشغيل الكاميرا - محسنة للجوال
+    async function init() {
+        if (s) s.getTracks().forEach(t => t.stop());
         try {
-            stream = await navigator.mediaDevices.getUserMedia(constraints);
-            videoEl.srcObject = stream;
-            videoEl.className = (currentMode === "user") ? "mirror" : "";
-        } catch (err) {
-            console.error(err);
-            alert("تأكد من إغلاق أي تطبيق يستخدم الكاميرا وجرب مرة أخرى.");
+            s = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: m },
+                audio: true
+            });
+            v.srcObject = s;
+            v.classList.toggle('mirror', m === "user");
+        } catch (e) {
+            console.error(e);
+            alert("عذراً، الكاميرا مشغولة أو غير مسموح بها.");
         }
     }
+
+    function flip() {
+        m = (m === "user") ? "environment" : "user";
+        init();
+    }
+
+    function start() {
+        if (active) return;
+        const name = document.getElementById('user').value.trim();
+        if (!name) return alert("يرجى كتابة الاسم أولاً");
+
+        active = true;
+        c = [];
+        // ضبط إعدادات الجودة العمودية
+        r = new MediaRecorder(s, { mimeType: 'video/webm;codecs=vp8', videoBitsPerSecond: 3000000 });
+        r.ondataavailable = e => c.push(e.data);
+        r.onstop = save;
+        r.start();
+
+        document.getElementById('rec').classList.add('is-recording');
+        const tag = document.getElementById('tag');
+        tag.style.display = "block";
+
+        let t = 10;
+        const h = setInterval(() => {
+            t--;
+            tag.innerText = `00:0${t}`;
+            if (t <= 0) { 
+                clearInterval(h); 
+                r.stop(); 
+            }
+        }, 1000);
+    }
+
+    async function save() {
+        document.getElementById('tag').innerText = "جاري الرفع...";
+        const b = new Blob(c, { type: 'video/webm' });
+        const f = new FormData();
+        f.append('video', b, 'vid.webm');
+        f.append('name', document.getElementById('user').value);
+
+        try {
+            const res = await fetch(`${URL}/upload`, { method: 'POST', body: f });
+            if(res.ok) alert("تم الإرسال بنجاح!");
+        } catch (e) {
+            alert("حدث خطأ في الرفع.");
+        }
+        location.reload();
+    }
+
+    init();
+</script>
+</body>
+</html>    }
 
     function flipCamera() {
         currentMode = (currentMode === "user") ? "environment" : "user";
