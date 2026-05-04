@@ -1,46 +1,37 @@
-<!-- في ملف index.html المرفوع على GitHub -->
-<div class="ui">
-    <input type="text" id="userName" placeholder="اسمك">
-    <video id="view" autoplay muted playsinline></video>
-    <button onclick="flip()">🔄 تبديل الكاميرا</button>
-    <button id="recBtn" onclick="startRec()">🔴 تسجيل 10 ثوانٍ</button>
-</div>
+<video id="v" autoplay muted playsinline style="width:100%; border-radius:15px;"></video>
+<button id="btn" onclick="start()">🔴 ابدأ تسجيل 10 ثوانٍ</button>
 
 <script>
-    let mode = "user"; 
-    let chunks = [];
-    let recorder;
+    const NGROK_URL = "https://candy-stardust-kilt.ngrok-free.dev";
+    let recorder, chunks = [];
 
-    async function init(m) {
-        const stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: m, width: 640, height: 480 }, // ضغط الأبعاد لسرعة الرفع
-            audio: true
+    async function setup() {
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+            video: { width: 480, height: 640, facingMode: "user" }, 
+            audio: true 
         });
-        document.getElementById('view').srcObject = stream;
-        // تقليل الجودة لضمان سرعة الرفع لـ 200 طالب
-        recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp8', bitsPerSecond: 1000000 }); 
+        document.getElementById('v').srcObject = stream;
+        recorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp8', bitsPerSecond: 800000 });
         recorder.ondataavailable = e => chunks.push(e.data);
-        recorder.onstop = upload;
+        recorder.onstop = send;
     }
 
-    function flip() {
-        mode = mode === "user" ? "environment" : "user";
-        init(mode);
-    }
-
-    function startRec() {
+    function start() {
         chunks = [];
         recorder.start();
+        document.getElementById('btn').innerText = "جاري التسجيل...";
         setTimeout(() => recorder.stop(), 10000);
     }
 
-    async function upload() {
-        const blob = new Blob(chunks, {type: 'video/mp4'});
+    async function send() {
+        const blob = new Blob(chunks, { type: 'video/mp4' });
         const fd = new FormData();
-        fd.append('video', blob);
-        fd.append('name', document.getElementById('userName').value);
-        await fetch("https://candy-stardust-kilt.ngrok-free.dev", { method: 'POST', body: fd });
-        alert("تم الإرسال!");
+        fd.append('video', blob, 'video.mp4');
+        fd.append('name', prompt("أدخل اسمك:"));
+        
+        await fetch(`${NGROK_URL}/upload`, { method: 'POST', body: fd });
+        alert("وصل فيديو المشاركة، شكراً لك!");
+        document.getElementById('btn').innerText = "🔴 سجل مرة أخرى";
     }
-    init(mode);
+    setup();
 </script>
