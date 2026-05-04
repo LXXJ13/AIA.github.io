@@ -122,4 +122,45 @@
 </script>
 
 </body>
+    <!-- أضف هذا الزر فوق الفيديو في ملف index.html -->
+<button id="flipBtn" class="btn" style="background:#6c757d; margin-bottom:10px;">🔄 تبديل الكاميرا</button>
+
+<script>
+    let currentFacingMode = 'user'; // 'user' للأمامية و 'environment' للخلفية
+    let currentStream = null;
+
+    async function startCamera(mode) {
+        if (currentStream) {
+            currentStream.getTracks().forEach(track => track.stop());
+        }
+
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                video: { facingMode: mode }, 
+                audio: true 
+            });
+            currentStream = stream;
+            const videoElement = document.getElementById('preview');
+            videoElement.srcObject = stream;
+            
+            // لضمان عدم تجمد الصورة في الآيفون
+            videoElement.play(); 
+            
+            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.ondataavailable = e => chunks.push(e.data);
+            mediaRecorder.onstop = uploadVideo;
+        } catch (err) {
+            alert("خطأ في تشغيل الكاميرا: " + err);
+        }
+    }
+
+    // زر تبديل الكاميرا
+    document.getElementById('flipBtn').onclick = () => {
+        currentFacingMode = (currentFacingMode === 'user') ? 'environment' : 'user';
+        startCamera(currentFacingMode);
+    };
+
+    // تشغيل الكاميرا لأول مرة
+    startCamera(currentFacingMode);
+</script>
 </html>
