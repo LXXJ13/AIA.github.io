@@ -1,68 +1,189 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>المشاركة التفاعلية</title>
+    <style>
+        * { box-sizing: border-box; }
+        body, html { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            background-color: #000; overflow: hidden; font-family: sans-serif;
+        }
+        .app-view {
+            position: relative; width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+        }
+        video {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            background: #111;
+        }
+        .mirror { transform: scaleX(-1); }
+        .header {
+            position: absolute; top: 0; width: 100%; padding: 30px 20px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+            z-index: 5; text-align: center;
+        }
+        input {
+            width: 85%; padding: 15px; border-radius: 30px;
+            border: 2px solid #fff; background: rgba(255,255,255,0.15);
+            color: #fff; font-size: 18px; outline: none; backdrop-filter: blur(8px);
+        }
+        .footer {
+            position: absolute; bottom: 0; width: 100%; padding: 50px 20px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            display: flex; justify-content: center; align-items: center; gap: 40px;
+            z-index: 5;
+        }
+        .rec-outer {
+            width: 85px; height: 85px; border: 6px solid #fff;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        }
+        .rec-inner {
+            width: 65px; height: 65px; background: #fff; border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        .is-recording .rec-inner {
+            background: #ff4757; border-radius: 15px; transform: scale(0.7);
+        }
+        .icon-btn {
+            background: rgba(255,255,255,0.2); border: none; width: 55px; height: 55px;
+            border-radius: 50%; color: #fff; font-size: 24px; cursor: pointer;
+            backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center;
+        }
+        .status-tag {
+            position: absolute; top: 110px; left: 50%; transform: translateX(-50%);
+            background: #ff4757; color: #fff; padding: 6px 20px; border-radius: 20px;
+            font-weight: bold; font-size: 14px; display: none; z-index: 6;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-view">
+        <div id="tag" class="status-tag">00:10</div>
+        <div class="header">
+            <input type="text" id="user" placeholder="أدخل اسمك الثلاثي...">
+        </div>
+        <video id="v" autoplay muted playsinline class="mirror"></video>
+        <div class="footer">
+            <button class="icon-btn" onclick="flip()">🔄</button>
+            <div class="rec-outer" id="rec" onclick="start()">
+                <div class="rec-inner"></div>
+            </div>
+            <div style="width: 55px;"></div>
+        </div>
+    </div>
 
-<title>المشاركة التفاعلية</title>
+<script>
+    const URL = "https://candy-stardust-kilt.ngrok-free.dev";
+    let stream = null;           // تيار الكاميرا الحالي
+    let facingMode = "user";    // أمامية
+    let mediaRecorder, recordedChunks = [];
+    let recordingActive = false;
+    const video = document.getElementById('v');
 
-<style>
-* { box-sizing: border-box; }
+    // طلب الكاميرا (بشرط نقرة مستخدم)
+    async function getCamera() {
+        // إذا كان هناك تيار قديم نوقفه
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: facingMode },
+                audio: true
+            });
+            video.srcObject = stream;
+            video.classList.toggle('mirror', facingMode === "user");
+            return stream;
+        } catch (err) {
+            console.error(err);
+            alert("عذراً، تعذر الوصول إلى الكاميرا. تأكد من السماح بالوصول.");
+            throw err;
+        }
+    }
 
-body, html {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    background: #000;
-    font-family: sans-serif;
-    overflow: hidden;
-}
+    // قلب الكاميرا (تعمل بنقرة أيقونة)
+    async function flip() {
+        if (recordingActive) {
+            alert("لا يمكن قلب الكاميرا أثناء التسجيل");
+            return;
+        }
+        facingMode = (facingMode === "user") ? "environment" : "user";
+        // نطلب الكاميرا مباشرة (يوجد تفاعل مستخدم)
+        await getCamera();
+    }
 
-.app {
-    position: relative;
-    width: 100%;
-    height: 100%;
-}
+    // بدء التسجيل
+    async function start() {
+        if (recordingActive) return;
+        const name = document.getElementById('user').value.trim();
+        if (!name) return alert("يرجى كتابة الاسم أولاً");
 
-video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    background: #111;
-}
+        // طلب الكاميرا إذا لم تكن مفعلة بعد (يطلب السماح هنا)
+        if (!stream) {
+            try {
+                await getCamera();
+            } catch (e) {
+                return; // رسالة الخطأ ظهرت في getCamera
+            }
+        }
 
-.mirror {
-    transform: scaleX(-1);
-}
+        recordingActive = true;
+        recordedChunks = [];
 
-.header {
-    position: absolute;
-    top: 0;
-    width: 100%;
-    padding: 25px;
-    text-align: center;
-    z-index: 5;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
-}
+        // استخدام صيغة مدعومة
+        const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp8') 
+                        ? 'video/webm;codecs=vp8' 
+                        : 'video/webm';
+        mediaRecorder = new MediaRecorder(stream, { mimeType: mimeType, videoBitsPerSecond: 3000000 });
+        mediaRecorder.ondataavailable = e => recordedChunks.push(e.data);
+        mediaRecorder.onstop = save;
+        mediaRecorder.start();
 
-input {
-    width: 85%;
-    padding: 14px;
-    border-radius: 25px;
-    border: 2px solid #fff;
-    background: rgba(255,255,255,0.1);
-    color: #fff;
-    font-size: 16px;
-}
+        document.getElementById('rec').classList.add('is-recording');
+        const tag = document.getElementById('tag');
+        tag.style.display = "block";
+        let count = 10;
+        tag.innerText = `00:${count}`;
+        const timer = setInterval(() => {
+            count--;
+            tag.innerText = `00:0${count}`;
+            if (count <= 0) {
+                clearInterval(timer);
+                mediaRecorder.stop();
+                recordingActive = false;
+                document.getElementById('rec').classList.remove('is-recording');
+            }
+        }, 1000);
+    }
 
-.footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    padding: 40px;
-    display: flex;
-    justify-content: center;
-    gap: 30px;
+    // حفظ الفيديو بعد التسجيل
+    async function save() {
+        const tag = document.getElementById('tag');
+        tag.innerText = "جاري الرفع...";
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+        const formData = new FormData();
+        formData.append('video', blob, 'vid.webm');
+        formData.append('name', document.getElementById('user').value);
+
+        try {
+            const response = await fetch(`${URL}/upload`, { method: 'POST', body: formData });
+            if (response.ok) {
+                alert("تم الإرسال بنجاح!");
+            } else {
+                alert("فشل الرفع، حاول مرة أخرى.");
+            }
+        } catch (e) {
+            alert("حدث خطأ في الاتصال بالخادم.");
+        }
+        // إعادة تحميل الصفحة لبداية جديدة
+        location.reload();
+    }
+</script>
+</body>
+</html>    gap: 30px;
     z-index: 5;
     background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
 }
