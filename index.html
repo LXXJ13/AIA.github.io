@@ -123,7 +123,7 @@ main {
   overflow: hidden;
   background: var(--card);
   border: 1px solid var(--border);
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 9 / 16;
   box-shadow: 0 0 60px rgba(255, 60, 95, 0.07);
 }
 
@@ -267,38 +267,6 @@ main {
   color: var(--green);
 }
 
-/* ── Flip button ── */
-.flip-btn {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s;
-}
-
-.flip-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-.flip-btn svg {
-  width: 18px;
-  height: 18px;
-  fill: none;
-  stroke: #fff;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
 
 /* ── Controls row ── */
 .controls {
