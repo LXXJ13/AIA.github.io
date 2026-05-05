@@ -556,22 +556,34 @@ function startCamera() {
   });
 }
 
+// 2. Clean up the flipCamera function (the manual override)
 function flipCamera() {
-  isMirrored = !isMirrored;
   var preview = document.getElementById("preview");
-  if (isMirrored) {
-    preview.classList.remove("rear");
-  } else {
-    preview.classList.add("rear");
-  }
+  // Toggle the "rear" class manually regardless of camera source
+  preview.classList.toggle("rear");
+  
+  // Update our internal tracking variable
+  isMirrored = !preview.classList.contains("rear");
+  
+  showToast(isMirrored ? "Mirroring On" : "Mirroring Off", "success");
 }
 
+// 1. Update the switchCamera function
 function switchCamera() {
-  facingMode = facingMode === "user" ? "environment" : "user";
-  isMirrored = facingMode === "user";
+  // Toggle the mode
+  facingMode = (facingMode === "user") ? "environment" : "user";
+  
+  // Update the visual mirroring logic
+  var preview = document.getElementById("preview");
+  if (facingMode === "user") {
+    preview.classList.remove("rear"); // This applies the default scaleX(-1)
+  } else {
+    preview.classList.add("rear");    // This removes the mirror effect
+  }
+  
+  // Restart the stream with the new camera
   startCamera();
 }
-
 function getBestMime() {
   var types = [
     "video/webm;codecs=vp9,opus",
