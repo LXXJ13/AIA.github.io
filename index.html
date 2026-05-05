@@ -1,68 +1,520 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>المشاركة التفاعلية</title>
-    <style>
-        * { box-sizing: border-box; }
-        body, html { 
-            margin: 0; padding: 0; width: 100%; height: 100%; 
-            background-color: #000; overflow: hidden; font-family: sans-serif;
-        }
-        .app-view {
-            position: relative; width: 100%; height: 100%;
-            display: flex; flex-direction: column;
-        }
-        video {
-            width: 100%; height: 100%;
-            object-fit: cover;
-            background: #111;
-        }
-        .mirror { transform: scaleX(-1); }
-        .header {
-            position: absolute; top: 0; width: 100%; padding: 30px 20px;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
-            z-index: 5; text-align: center;
-        }
-        input {
-            width: 85%; padding: 15px; border-radius: 30px;
-            border: 2px solid #fff; background: rgba(255,255,255,0.15);
-            color: #fff; font-size: 18px; outline: none; backdrop-filter: blur(8px);
-        }
-        .footer {
-            position: absolute; bottom: 0; width: 100%; padding: 50px 20px;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-            display: flex; justify-content: center; align-items: center; gap: 40px;
-            z-index: 5;
-            visibility: hidden;
-        }
-        .footer.visible {
-            visibility: visible;
-        }
-        .rec-outer {
-            width: 85px; height: 85px; border: 6px solid #fff;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-        }
-        .rec-inner {
-            width: 65px; height: 65px; background: #fff; border-radius: 50%;
-            transition: all 0.3s ease;
-        }
-        .is-recording .rec-inner {
-            background: #ff4757; border-radius: 15px; transform: scale(0.7);
-        }
-        .icon-btn {
-            background: rgba(255,255,255,0.2); border: none; width: 55px; height: 55px;
-            border-radius: 50%; color: #fff; font-size: 24px; cursor: pointer;
-            backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center;
-        }
-        .status-tag {
-            position: absolute; top: 110px; left: 50%; transform: translateX(-50%);
-            background: #ff4757; color: #fff; padding: 6px 20px; border-radius: 20px;
-            font-weight: bold; font-size: 14px; display: none; z-index: 6;
-        }
-        .camera-start-btn {
-            position: absolute;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VidStream — Record</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+:root {
+  --bg: #080810;
+  --card: #10101c;
+  --border: #1c1c2e;
+  --accent: #ff3c5f;
+  --accent2: #ff8c42;
+  --green: #00e5a0;
+  --text: #eeeef8;
+  --muted: #4a4a64;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* grain */
+body::after {
+  content:''; position:fixed; inset:0; pointer-events:none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  z-index:100;
+}
+
+header {
+  width:100%; max-width:640px;
+  padding: 20px 24px;
+  display:flex; align-items:center; justify-content:space-between;
+}
+
+.logo {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:24px; letter-spacing:4px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+
+.badge {
+  font-size:11px; font-weight:500; letter-spacing:2px; text-transform:uppercase;
+  color: var(--muted); border: 1px solid var(--border);
+  padding: 4px 12px; border-radius:99px;
+}
+
+main {
+  width:100%; max-width:640px;
+  padding: 0 16px 48px;
+  display:flex; flex-direction:column; align-items:center; gap:20px;
+}
+
+/* Name input */
+.name-row {
+  width:100%; position:relative;
+}
+.name-row label {
+  position:absolute; top:-9px; left:12px;
+  font-size:10px; letter-spacing:2px; text-transform:uppercase;
+  color: var(--muted); background: var(--bg); padding: 0 4px;
+}
+.name-row input {
+  width:100%; background: var(--card); border: 1px solid var(--border);
+  border-radius:10px; color: var(--text);
+  font-family:'DM Sans',sans-serif; font-size:15px; font-weight:500;
+  padding: 14px 16px; outline:none; transition: border-color 0.2s;
+}
+.name-row input:focus { border-color: var(--accent); }
+
+/* Camera */
+.camera-shell {
+  width:100%; position:relative;
+  border-radius:20px; overflow:hidden;
+  background: var(--card); border: 1px solid var(--border);
+  aspect-ratio:16/9;
+  box-shadow: 0 0 60px rgba(255,60,95,0.07), 0 0 0 1px var(--border);
+}
+
+#preview {
+  width:100%; height:100%; object-fit:cover; display:block;
+  transform: scaleX(-1);
+  transition: transform 0.3s ease;
+}
+#preview.rear { transform: scaleX(1); }
+
+/* countdown ring */
+.ring-wrap {
+  position:absolute; top:50%; left:50%;
+  transform: translate(-50%,-50%);
+  display:none; flex-direction:column; align-items:center; gap:8px;
+}
+.ring-wrap.active { display:flex; }
+
+.ring {
+  width:90px; height:90px;
+  position:relative;
+}
+.ring svg { position:absolute; inset:0; transform:rotate(-90deg); }
+.ring-track { stroke: rgba(255,255,255,0.1); }
+.ring-fill {
+  stroke: var(--accent);
+  stroke-dasharray: 251.2;
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 1s linear;
+}
+.ring-num {
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Bebas Neue',sans-serif; font-size:36px; color:#fff;
+}
+
+.rec-dot {
+  display:flex; align-items:center; gap:6px;
+  font-size:11px; letter-spacing:2px; text-transform:uppercase;
+  color: var(--accent);
+}
+.rec-dot::before {
+  content:''; width:7px; height:7px; border-radius:50%;
+  background: var(--accent);
+  animation: blink 1s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+/* Status bar */
+.status-bar {
+  position:absolute; bottom:0; left:0; right:0;
+  padding: 10px 14px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.7));
+  display:flex; align-items:center; justify-content:space-between;
+}
+.status-text {
+  font-size:12px; letter-spacing:1px; text-transform:uppercase;
+  color: rgba(255,255,255,0.5);
+}
+#connStatus {
+  font-size:11px; letter-spacing:1.5px; text-transform:uppercase;
+  color: var(--muted);
+}
+#connStatus.ok { color: var(--green); }
+
+/* Flip btn */
+.flip-btn {
+  position:absolute; top:12px; right:12px;
+  width:38px; height:38px; border-radius:50%;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.15);
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition: background 0.2s, transform 0.3s;
+}
+.flip-btn:hover { background: rgba(255,255,255,0.18); }
+.flip-btn:active { transform: scale(0.9) rotate(180deg); }
+.flip-btn svg { width:18px; height:18px; fill:none; stroke:#fff; stroke-width:2; }
+
+/* Controls */
+.controls {
+  width:100%; display:flex; gap:12px;
+}
+
+.btn-record {
+  flex:1; height:56px;
+  border:none; border-radius:14px; cursor:pointer;
+  font-family:'Bebas Neue',sans-serif; font-size:20px; letter-spacing:3px;
+  background: linear-gradient(135deg, var(--accent), #c0283f);
+  color:#fff;
+  box-shadow: 0 4px 24px rgba(255,60,95,0.35);
+  transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+  position:relative; overflow:hidden;
+}
+.btn-record::after {
+  content:''; position:absolute; inset:0;
+  background: linear-gradient(rgba(255,255,255,0.1), transparent);
+}
+.btn-record:hover:not(:disabled) { transform:translateY(-2px); box-shadow: 0 8px 32px rgba(255,60,95,0.45); }
+.btn-record:active:not(:disabled) { transform:translateY(0); }
+.btn-record:disabled { opacity:0.4; cursor:not-allowed; }
+
+.btn-cam {
+  width:56px; height:56px;
+  border:none; border-radius:14px; cursor:pointer;
+  background: var(--card); border:1px solid var(--border);
+  color: var(--text);
+  display:flex; align-items:center; justify-content:center;
+  transition: background 0.2s;
+}
+.btn-cam:hover { background: #1a1a2a; }
+.btn-cam svg { width:22px; height:22px; }
+
+/* Upload progress */
+.upload-bar {
+  width:100%; height:4px; border-radius:99px;
+  background: var(--border); overflow:hidden; display:none;
+}
+.upload-bar.active { display:block; }
+.upload-fill {
+  height:100%; width:0%;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  border-radius:99px;
+  transition: width 0.3s ease;
+}
+
+/* Toast */
+.toast {
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px);
+  background: var(--card); border:1px solid var(--border);
+  border-radius:12px; padding:12px 20px;
+  font-size:14px; font-weight:500;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
+  opacity:0; z-index:200; white-space:nowrap;
+}
+.toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+.toast.success { border-color: var(--green); color: var(--green); }
+.toast.error { border-color: var(--accent); color: var(--accent); }
+
+/* No-camera message */
+.no-cam {
+  position:absolute; inset:0;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px;
+  color: var(--muted);
+}
+.no-cam svg { width:48px; height:48px; opacity:0.3; }
+.no-cam p { font-size:14px; }
+
+/* Tips */
+.tips {
+  width:100%; background: var(--card); border:1px solid var(--border);
+  border-radius:14px; padding:16px 20px;
+  display:flex; flex-direction:column; gap:8px;
+}
+.tips-title {
+  font-size:10px; letter-spacing:2px; text-transform:uppercase; color: var(--muted);
+  margin-bottom:4px;
+}
+.tip {
+  font-size:13px; color: rgba(238,238,248,0.6);
+  display:flex; align-items:center; gap:8px;
+}
+.tip-dot { width:4px; height:4px; border-radius:50%; background: var(--accent); flex-shrink:0; }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="logo">VIDSTREAM</span>
+  <span class="badge">Recorder</span>
+</header>
+
+<main>
+
+  <!-- Sender name -->
+  <div class="name-row">
+    <label>Your Name</label>
+    <input type="text" id="senderName" placeholder="Enter your name…" maxlength="32" />
+  </div>
+
+  <!-- Camera preview -->
+  <div class="camera-shell">
+    <video id="preview" autoplay muted playsinline></video>
+
+    <div class="no-cam" id="noCam">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M15 10l4.553-2.276A1 1 0 0121 8.723v6.554a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/>
+        <line x1="3" y1="3" x2="21" y2="21" stroke-width="1.5"/>
+      </svg>
+      <p>Tap Record to start camera</p>
+    </div>
+
+    <!-- Countdown ring -->
+    <div class="ring-wrap" id="ringWrap">
+      <div class="ring">
+        <svg viewBox="0 0 90 90" width="90" height="90">
+          <circle class="ring-track" cx="45" cy="45" r="40" fill="none" stroke-width="6"/>
+          <circle class="ring-fill" id="ringFill" cx="45" cy="45" r="40" fill="none" stroke-width="6" stroke-linecap="round"/>
+        </svg>
+        <div class="ring-num" id="ringNum">10</div>
+      </div>
+      <div class="rec-dot">REC</div>
+    </div>
+
+    <button class="flip-btn" id="flipBtn" title="Flip camera" onclick="flipCamera()">
+      <svg viewBox="0 0 24 24"><path d="M1 4v6h6"/><path d="M23 20v-6h-6"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>
+    </button>
+
+    <div class="status-bar">
+      <span class="status-text" id="statusText">Ready</span>
+      <span id="connStatus">● No Server</span>
+    </div>
+  </div>
+
+  <!-- Upload progress -->
+  <div class="upload-bar" id="uploadBar">
+    <div class="upload-fill" id="uploadFill"></div>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <button class="btn-record" id="recordBtn" onclick="startRecording()">● REC 10s</button>
+    <button class="btn-cam" title="Switch camera" onclick="switchCamera()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+        <circle cx="12" cy="13" r="4"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Tips -->
+  <div class="tips">
+    <div class="tips-title">How it works</div>
+    <div class="tip"><div class="tip-dot"></div>Enter your name so the dashboard knows who sent the clip</div>
+    <div class="tip"><div class="tip-dot"></div>Hit REC — recording stops automatically after 10 seconds</div>
+    <div class="tip"><div class="tip-dot"></div>Video is compressed and sent instantly</div>
+    <div class="tip"><div class="tip-dot"></div>Multiple people can record and send at the same time</div>
+  </div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Config — UPDATE THIS when you get a new ngrok URL ─────────────────────
+const SERVER_URL = "https://YOUR-NGROK-URL.ngrok-free.app"; // ← change this
+
+// ── State ──────────────────────────────────────────────────────────────────
+let stream = null;
+let mediaRecorder = null;
+let chunks = [];
+let countdown = null;
+let facingMode = "user"; // user = front, environment = rear
+let isMirrored = true;
+let isRecording = false;
+
+const MAX_DURATION = 10; // seconds
+const CIRCUMFERENCE = 2 * Math.PI * 40; // ring circumference
+
+// ── Init ───────────────────────────────────────────────────────────────────
+window.addEventListener("load", () => {
+  const saved = localStorage.getItem("vidstream_name");
+  if (saved) document.getElementById("senderName").value = saved;
+
+  updateConnStatus();
+  startCamera();
+});
+
+async function updateConnStatus() {
+  const el = document.getElementById("connStatus");
+  try {
+    const r = await fetch(`${SERVER_URL}/videos`, { signal: AbortSignal.timeout(4000) });
+    if (r.ok) { el.textContent = "● Connected"; el.className = "ok"; }
+    else throw new Error();
+  } catch {
+    el.textContent = "● Unreachable"; el.className = "";
+  }
+}
+
+// ── Camera ─────────────────────────────────────────────────────────────────
+async function startCamera() {
+  try {
+    if (stream) stream.getTracks().forEach(t => t.stop());
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode, width: { ideal: 1280 }, height: { ideal: 720 } },
+      audio: true
+    });
+    const preview = document.getElementById("preview");
+    preview.srcObject = stream;
+    document.getElementById("noCam").style.display = "none";
+    setStatus("Camera ready");
+  } catch (e) {
+    setStatus("Camera error");
+    showToast("Camera access denied", "error");
+  }
+}
+
+function flipCamera() {
+  isMirrored = !isMirrored;
+  const preview = document.getElementById("preview");
+  preview.classList.toggle("rear", !isMirrored);
+}
+
+function switchCamera() {
+  facingMode = facingMode === "user" ? "environment" : "user";
+  isMirrored = facingMode === "user";
+  startCamera();
+}
+
+// ── Recording ──────────────────────────────────────────────────────────────
+function getBestMime() {
+  const types = ["video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm", "video/mp4"];
+  return types.find(t => MediaRecorder.isTypeSupported(t)) || "";
+}
+
+async function startRecording() {
+  if (isRecording) return;
+  if (!stream) { await startCamera(); if (!stream) return; }
+
+  const name = document.getElementById("senderName").value.trim() || "Anonymous";
+  localStorage.setItem("vidstream_name", name);
+
+  isRecording = true;
+  chunks = [];
+
+  const mimeType = getBestMime();
+  const options = mimeType ? { mimeType, videoBitsPerSecond: 800_000 } : { videoBitsPerSecond: 800_000 };
+  // 800kbps = good quality + small size for 10s
+
+  mediaRecorder = new MediaRecorder(stream, options);
+  mediaRecorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+  mediaRecorder.onstop = () => uploadVideo(mimeType || "video/webm", name);
+  mediaRecorder.start(500); // collect every 500ms
+
+  // UI
+  document.getElementById("recordBtn").disabled = true;
+  document.getElementById("recordBtn").textContent = "RECORDING…";
+  document.getElementById("ringWrap").classList.add("active");
+  startCountdown();
+}
+
+function startCountdown() {
+  let remaining = MAX_DURATION;
+  const numEl = document.getElementById("ringNum");
+  const fillEl = document.getElementById("ringFill");
+  fillEl.style.strokeDashoffset = 0;
+
+  const tick = () => {
+    numEl.textContent = remaining;
+    const progress = (MAX_DURATION - remaining) / MAX_DURATION;
+    fillEl.style.strokeDashoffset = CIRCUMFERENCE * progress;
+    setStatus(`Recording… ${remaining}s left`);
+
+    if (remaining <= 0) { stopRecording(); return; }
+    remaining--;
+    countdown = setTimeout(tick, 1000);
+  };
+  tick();
+}
+
+function stopRecording() {
+  clearTimeout(countdown);
+  if (mediaRecorder && mediaRecorder.state !== "inactive") mediaRecorder.stop();
+  document.getElementById("ringWrap").classList.remove("active");
+  document.getElementById("recordBtn").textContent = "UPLOADING…";
+  setStatus("Uploading…");
+}
+
+// ── Upload ─────────────────────────────────────────────────────────────────
+async function uploadVideo(mimeType, senderName) {
+  const blob = new Blob(chunks, { type: mimeType });
+  const bar = document.getElementById("uploadBar");
+  const fill = document.getElementById("uploadFill");
+  bar.classList.add("active");
+
+  // Simulate upload progress (XHR for real progress)
+  const xhr = new XMLHttpRequest();
+  xhr.open("POST", `${SERVER_URL}/upload`);
+  xhr.setRequestHeader("X-Sender-Name", senderName);
+  xhr.setRequestHeader("X-Mime-Type", mimeType);
+  xhr.setRequestHeader("Content-Type", "application/octet-stream");
+
+  xhr.upload.onprogress = e => {
+    if (e.lengthComputable) fill.style.width = `${(e.loaded/e.total)*100}%`;
+  };
+
+  xhr.onload = () => {
+    bar.classList.remove("active");
+    fill.style.width = "0%";
+    isRecording = false;
+    document.getElementById("recordBtn").disabled = false;
+    document.getElementById("recordBtn").textContent = "● REC 10s";
+
+    if (xhr.status === 200) {
+      setStatus("Sent! ✓");
+      showToast(`Clip sent by ${senderName} ✓`, "success");
+    } else {
+      setStatus("Upload failed");
+      showToast("Upload failed — check server URL", "error");
+    }
+    setTimeout(() => setStatus("Camera ready"), 3000);
+  };
+
+  xhr.onerror = () => {
+    isRecording = false;
+    document.getElementById("recordBtn").disabled = false;
+    document.getElementById("recordBtn").textContent = "● REC 10s";
+    bar.classList.remove("active");
+    setStatus("Upload failed");
+    showToast("Cannot reach server — check URL", "error");
+  };
+
+  xhr.send(blob);
+}
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+function setStatus(text) { document.getElementById("statusText").textContent = text; }
+
+let toastTimer;
+function showToast(msg, type = "") {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.classList.remove("show"); }, 3000);
+}
+</script>
+</body>
+</html>            position: absolute;
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             background: rgba(255,255,255,0.25);
