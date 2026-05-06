@@ -125,17 +125,24 @@ main {
   box-shadow: 0 0 60px rgba(255, 60, 95, 0.07);
  }
 
+/* -- Camera shell -- */
 #preview {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
-  transform: scaleX(-1);
+  /* إزالة أي تحويل افتراضي من هنا */
   transition: transform 0.3s ease;
 }
 
-#preview.rear {
-  transform: scaleY(1);
+/* الكاميرا الأمامية فقط هي التي تنعكس (مثل السيلفي) */
+#preview.user {
+  transform: scaleX(-1);
+}
+
+/* الكاميرا الخلفية تظهر بشكل طبيعي */
+#preview.environment {
+  transform: scaleX(1);
 }
 
 /* No camera placeholder */
@@ -405,7 +412,7 @@ main {
 // =========================================================
 // CONFIG — استبدل برابط ngrok الخاص بك
 // =========================================================
-var SERVER_URL = "https://candy-stardust-kilt.ngrok-free.dev";
+var SERVER_URL = "https://YOUR-NGROK-URL.ngrok-free.app";
 // =========================================================
 
 // ── Fixed settings ─────────────────────────────────────────────────────────
@@ -466,11 +473,15 @@ function startCamera() {
 
   navigator.mediaDevices.getUserMedia({
     video: { facingMode: facingMode, width: { ideal: 1280 }, height: { ideal: 720 } },
-    audio: true
+    audio: false
   }).then(function(s) {
     stream = s;
     var preview = document.getElementById("preview");
     preview.srcObject = stream;
+    
+    // تحديث الكلاس بناءً على نوع الكاميرا المستخدمة حالياً
+    preview.className = facingMode; 
+    
     document.getElementById("noCam").style.display = "none";
     setStatus("الكاميرا جاهزة");
   }).catch(function(err) {
