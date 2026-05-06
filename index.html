@@ -1,78 +1,79 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VidStream - Record</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>فيد ستريم — تسجيل</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg: #080810;
   --card: #10101c;
   --border: #1c1c2e;
+  --border2: #252538;
   --accent: #ff3c5f;
   --accent2: #ff8c42;
   --green: #00e5a0;
+  --blue: #4e8cff;
   --text: #eeeef8;
   --muted: #4a4a64;
+  --muted2: #666680;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'DM Sans', system-ui, sans-serif;
-  min-height: 100vh;
+  font-family: 'Tajawal', sans-serif;
+  min-height: 100svh;
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow-x: hidden;
 }
 
+/* ── Header ── */
 header {
   width: 100%;
-  max-width: 640px;
-  padding: 20px 24px;
+  max-width: 480px;
+  padding: 18px 20px 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
 .logo {
-  font-family: 'Bebas Neue', Impact, sans-serif;
-  font-size: 24px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
   letter-spacing: 4px;
   background: linear-gradient(90deg, var(--accent), var(--accent2));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .badge {
   font-size: 11px;
   font-weight: 500;
-  letter-spacing: 2px;
-  text-transform: uppercase;
   color: var(--muted);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border2);
   padding: 4px 12px;
   border-radius: 99px;
 }
 
+/* ── Main ── */
 main {
   width: 100%;
-  max-width: 640px;
-  padding: 0 16px 48px;
+  max-width: 480px;
+  padding: 0 14px 40px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 18px;
+  gap: 14px;
 }
 
 /* ── Name input ── */
@@ -84,10 +85,9 @@ main {
 .name-row label {
   position: absolute;
   top: -9px;
-  left: 12px;
+  right: 12px;
   font-size: 10px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
+  letter-spacing: 1.5px;
   color: var(--muted);
   background: var(--bg);
   padding: 0 4px;
@@ -97,23 +97,19 @@ main {
   width: 100%;
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: 12px;
   color: var(--text);
-  font-family: 'DM Sans', system-ui, sans-serif;
-  font-size: 15px;
+  font-family: 'Tajawal', sans-serif;
+  font-size: 16px;
   font-weight: 500;
   padding: 14px 16px;
   outline: none;
   transition: border-color 0.2s;
+  -webkit-appearance: none;
 }
 
-.name-row input:focus {
-  border-color: var(--accent);
-}
-
-.name-row input::placeholder {
-  color: var(--muted);
-}
+.name-row input:focus { border-color: var(--accent); }
+.name-row input::placeholder { color: var(--muted); }
 
 /* ── Camera shell ── */
 .camera-shell {
@@ -124,423 +120,369 @@ main {
   background: var(--card);
   border: 1px solid var(--border);
   aspect-ratio: 9 / 16;
-  box-shadow: 0 0 60px rgba(255, 60, 95, 0.07);
+  max-height: 55svh;
+  box-shadow: 0 0 60px rgba(255,60,95,0.06);
 }
 
 #preview {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  transform: scaleX(-1);
-  transition: transform 0.3s ease;
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
 }
 
-#preview.rear {
-  transform: scaleX(1);
-}
-
-/* ── No camera placeholder ── */
+/* No camera placeholder */
 .no-cam {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 12px;
   color: var(--muted);
 }
-
-.no-cam svg {
-  width: 48px;
-  height: 48px;
-  opacity: 0.3;
-}
-
-.no-cam p {
-  font-size: 14px;
-}
+.no-cam svg { width: 44px; height: 44px; opacity: 0.3; }
+.no-cam p { font-size: 14px; }
 
 /* ── Countdown ring ── */
 .ring-wrap {
-  position: absolute;
-  top: 50%;
-  left: 50%;
+  position: absolute; top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
+  display: none; flex-direction: column;
+  align-items: center; gap: 8px;
+  pointer-events: none;
 }
+.ring-wrap.active { display: flex; }
 
-.ring-wrap.active {
-  display: flex;
-}
-
-.ring {
-  width: 90px;
-  height: 90px;
-  position: relative;
-}
-
-.ring svg {
-  position: absolute;
-  inset: 0;
-  transform: rotate(-90deg);
-}
-
-.ring-track {
-  stroke: rgba(255, 255, 255, 0.1);
-}
-
+.ring { width: 90px; height: 90px; position: relative; }
+.ring svg { position: absolute; inset: 0; transform: rotate(-90deg); }
+.ring-track { stroke: rgba(255,255,255,0.1); }
 .ring-fill {
   stroke: var(--accent);
   stroke-dasharray: 251.2;
   stroke-dashoffset: 0;
   transition: stroke-dashoffset 1s linear;
 }
-
 .ring-num {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Bebas Neue', Impact, sans-serif;
-  font-size: 36px;
-  color: #fff;
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: #fff;
 }
 
 .rec-dot {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--accent);
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; letter-spacing: 2px;
+  color: var(--accent); font-family: 'Tajawal', sans-serif;
 }
-
 .rec-dot::before {
-  content: '';
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--accent);
-  animation: blink 1s ease-in-out infinite;
+  content: ''; width: 7px; height: 7px; border-radius: 50%;
+  background: var(--accent); animation: blink 1s ease-in-out infinite;
 }
+@keyframes blink { 0%,100%{opacity:1}50%{opacity:0.2} }
 
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.2; }
-}
-
-/* ── Status bar ── */
-.status-bar {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 10px 14px;
-  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+/* ── Server status ── */
+.server-status {
+  width: 100%;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  font-size: 13px;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--muted);
+  transition: all 0.3s;
+}
+
+.status-dot.connected {
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green);
+}
+
+.status-dot.busy {
+  background: var(--accent);
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 .status-text {
+  color: var(--muted2);
+}
+
+.server-info {
+  color: var(--muted2);
   font-size: 12px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.5);
-}
-
-#connStatus {
-  font-size: 11px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-#connStatus.ok {
-  color: var(--green);
-}
-
-
-/* ── Controls row ── */
-.controls {
-  width: 100%;
-  display: flex;
-  gap: 12px;
-}
-
-.btn-record {
-  flex: 1;
-  height: 56px;
-  border: none;
-  border-radius: 14px;
-  cursor: pointer;
-  font-family: 'Bebas Neue', Impact, sans-serif;
-  font-size: 20px;
-  letter-spacing: 3px;
-  background: linear-gradient(135deg, var(--accent), #c0283f);
-  color: #fff;
-  box-shadow: 0 4px 24px rgba(255, 60, 95, 0.35);
-  transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
-}
-
-.btn-record:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 32px rgba(255, 60, 95, 0.45);
-}
-
-.btn-record:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-.btn-record:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.btn-cam {
-  width: 56px;
-  height: 56px;
-  border: none;
-  border-radius: 14px;
-  cursor: pointer;
-  background: var(--card);
-  border: 1px solid var(--border);
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s;
-}
-
-.btn-cam:hover {
-  background: #1a1a2a;
-}
-
-.btn-cam svg {
-  width: 22px;
-  height: 22px;
 }
 
 /* ── Upload progress ── */
 .upload-bar {
-  width: 100%;
-  height: 4px;
+  width: 100%; height: 5px;
   border-radius: 99px;
   background: var(--border);
-  overflow: hidden;
-  display: none;
+  overflow: hidden; display: none;
+  position: relative;
 }
-
-.upload-bar.active {
-  display: block;
-}
-
+.upload-bar.active { display: block; }
 .upload-fill {
-  height: 100%;
-  width: 0%;
+  height: 100%; width: 0%;
   background: linear-gradient(90deg, var(--accent), var(--accent2));
   border-radius: 99px;
-  transition: width 0.3s ease;
+  transition: width 0.25s ease;
 }
 
-/* ── Tips ── */
-.tips {
+/* ── Controls ── */
+.controls {
   width: 100%;
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 16px 20px;
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
-.tips-title {
-  font-size: 10px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 4px;
+.btn-record {
+  flex: 1; height: 58px;
+  border: none; border-radius: 16px; cursor: pointer;
+  font-family: 'Tajawal', sans-serif; font-size: 19px; font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), #c0283f);
+  color: #fff;
+  box-shadow: 0 4px 24px rgba(255,60,95,0.35);
+  transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+  letter-spacing: 0.5px;
 }
+.btn-record:active:not(:disabled) { transform: scale(0.97); }
+.btn-record:disabled { opacity: 0.45; cursor: not-allowed; }
 
-.tip {
-  font-size: 13px;
-  color: rgba(238, 238, 248, 0.6);
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.btn-cam {
+  width: 58px; height: 58px; flex-shrink: 0;
+  border: none; border-radius: 16px; cursor: pointer;
+  background: var(--card); border: 1px solid var(--border2);
+  color: var(--text);
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
 }
-
-.tip-dot {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--accent);
-  flex-shrink: 0;
-}
+.btn-cam:active { background: var(--border2); }
+.btn-cam svg { width: 22px; height: 22px; }
 
 /* ── Toast ── */
 .toast {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
+  position: fixed; bottom: 24px; left: 50%;
   transform: translateX(-50%) translateY(80px);
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 12px 20px;
-  font-size: 14px;
-  font-weight: 500;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s;
-  opacity: 0;
-  z-index: 200;
-  white-space: nowrap;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 12px 20px;
+  font-family: 'Tajawal', sans-serif;
+  font-size: 14px; font-weight: 500;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
+  opacity: 0; z-index: 200; white-space: nowrap;
+  max-width: calc(100vw - 32px);
 }
-
-.toast.show {
-  transform: translateX(-50%) translateY(0);
-  opacity: 1;
-}
-
-.toast.success {
-  border-color: var(--green);
-  color: var(--green);
-}
-
-.toast.error {
-  border-color: var(--accent);
-  color: var(--accent);
-}
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+.toast.success { border-color: var(--green); color: var(--green); }
+.toast.error   { border-color: var(--accent); color: var(--accent); }
+.toast.info    { border-color: var(--blue);   color: var(--blue); }
+.toast.warning { border-color: var(--accent2); color: var(--accent2); }
 </style>
 </head>
 <body>
 
 <header>
   <span class="logo">VIDSTREAM</span>
-  <span class="badge">Recorder</span>
+  <span class="badge">تسجيل</span>
 </header>
 
 <main>
-
+  <!-- Name -->
   <div class="name-row">
-    <label for="senderName">Your Name</label>
-    <input type="text" id="senderName" placeholder="Enter your name..." maxlength="32">
+    <label for="senderName">اسمك</label>
+    <input type="text" id="senderName" placeholder="أدخل اسمك..." maxlength="40"
+           autocomplete="name" autocorrect="off" autocapitalize="words">
   </div>
 
+  <!-- Camera -->
   <div class="camera-shell">
-
     <video id="preview" autoplay muted playsinline></video>
 
     <div class="no-cam" id="noCam">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M15 10l4.553-2.276A1 1 0 0121 8.723v6.554a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"></path>
-        <line x1="3" y1="3" x2="21" y2="21" stroke-width="1.5"></line>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M15 10l4.553-2.276A1 1 0 0121 8.723v6.554a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/>
+        <line x1="3" y1="3" x2="21" y2="21" stroke-width="1.5"/>
       </svg>
-      <p>Tap Record to start camera</p>
+      <p>اضغط تسجيل لتشغيل الكاميرا</p>
     </div>
 
     <div class="ring-wrap" id="ringWrap">
       <div class="ring">
         <svg viewBox="0 0 90 90" width="90" height="90">
-          <circle class="ring-track" cx="45" cy="45" r="40" fill="none" stroke-width="6"></circle>
-          <circle class="ring-fill" id="ringFill" cx="45" cy="45" r="40" fill="none" stroke-width="6" stroke-linecap="round"></circle>
+          <circle class="ring-track" cx="45" cy="45" r="40" fill="none" stroke-width="6"/>
+          <circle class="ring-fill" id="ringFill" cx="45" cy="45" r="40" fill="none" stroke-width="6" stroke-linecap="round"/>
         </svg>
         <div class="ring-num" id="ringNum">10</div>
       </div>
-      <div class="rec-dot">REC</div>
+      <div class="rec-dot">تسجيل</div>
     </div>
-
-    <button class="flip-btn" title="Mirror camera" onclick="flipCamera()">
-      <svg viewBox="0 0 24 24">
-        <path d="M1 4v6h6"></path>
-        <path d="M23 20v-6h-6"></path>
-        <path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"></path>
-      </svg>
-    </button>
 
     <div class="status-bar">
-      <span class="status-text" id="statusText">Ready</span>
-      <span id="connStatus">Checking...</span>
+      <span class="status-text" id="statusText">جاهز</span>
+      <span id="connStatus">يتحقق…</span>
     </div>
-
   </div>
 
+  <!-- Server Status -->
+  <div class="server-status">
+    <div class="status-indicator">
+      <div class="status-dot" id="serverDot"></div>
+      <span class="status-text" id="serverStatusText">جارٍ الاتصال بالخادم...</span>
+    </div>
+    <div class="server-info" id="serverInfo">
+      متصل: 0
+    </div>
+  </div>
+
+  <!-- Upload progress -->
   <div class="upload-bar" id="uploadBar">
     <div class="upload-fill" id="uploadFill"></div>
   </div>
 
+  <!-- Controls -->
   <div class="controls">
-    <button class="btn-record" id="recordBtn" onclick="startRecording()">&#9679; REC 10s</button>
-    <button class="btn-cam" title="Switch front/rear camera" onclick="switchCamera()">
+    <button class="btn-record" id="recordBtn" onclick="startRecording()">⏺ تسجيل ١٠ ث</button>
+    <button class="btn-cam" title="تبديل الكاميرا" onclick="switchCamera()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"></path>
-        <circle cx="12" cy="13" r="4"></circle>
+        <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+        <circle cx="12" cy="13" r="4"/>
       </svg>
     </button>
   </div>
 
-  <div class="tips">
-    <div class="tips-title">How it works</div>
-    <div class="tip"><div class="tip-dot"></div>Enter your name so the dashboard knows who sent the clip</div>
-    <div class="tip"><div class="tip-dot"></div>Hit REC &mdash; recording stops automatically after 10 seconds</div>
-    <div class="tip"><div class="tip-dot"></div>Video is compressed and sent instantly</div>
-    <div class="tip"><div class="tip-dot"></div>Multiple people can record and send at the same time</div>
+  <!-- Tips -->
+  <div class="tips" style="width:100%; background:var(--card); border:1px solid var(--border); border-radius:14px; padding:16px 18px; display:flex; flex-direction:column; gap:10px;">
+    <div style="font-size:11px; font-weight:700; color:var(--muted); margin-bottom:2px;">تعليمات للاستخدام الجماعي</div>
+    <div style="font-size:13px; color:rgba(238,238,248,0.6); display:flex; align-items:flex-start; gap:10px; line-height:1.5;">
+      <div style="width:5px; height:5px; border-radius:50%; background:var(--accent); flex-shrink:0; margin-top:6px;"></div>
+      يمكن لـ 300 شخص التسجيل في نفس الوقت
+    </div>
+    <div style="font-size:13px; color:rgba(238,238,248,0.6); display:flex; align-items:flex-start; gap:10px; line-height:1.5;">
+      <div style="width:5px; height:5px; border-radius:50%; background:var(--accent); flex-shrink:0; margin-top:6px;"></div>
+      إذا كان الخادم مشغولاً، سيتم وضعك في طابور تلقائياً
+    </div>
+    <div style="font-size:13px; color:rgba(238,238,248,0.6); display:flex; align-items:flex-start; gap:10px; line-height:1.5;">
+      <div style="width:5px; height:5px; border-radius:50%; background:var(--accent); flex-shrink:0; margin-top:6px;"></div>
+      الفيديوهات تُحذف تلقائياً بعد 300 فيديو لحفظ المساحة
+    </div>
   </div>
-
 </main>
 
 <div class="toast" id="toast"></div>
 
 <script>
 // =========================================================
-// CONFIG — replace with your ngrok URL each session
+// CONFIG — استبدل برابط الخادم الخاص بك
 // =========================================================
-var SERVER_URL = "https://candy-stardust-kilt.ngrok-free.dev";
+var SERVER_URL = window.location.origin; // يعمل تلقائياً مع نفس الخادم
 // =========================================================
+
+// ── الإعدادات ─────────────────────────────────────────────────────────────
+var VIDEO_BITRATE = 1500000; // 1.5 Mbps
+var MAX_DURATION = 10;       // 10 ثوانٍ
+var CIRCUMFERENCE = 2 * Math.PI * 40;
 
 var stream = null;
 var mediaRecorder = null;
 var chunks = [];
 var countdownTimer = null;
 var facingMode = "user";
-var isMirrored = true;
 var isRecording = false;
+var uploadRetries = 0;
+var MAX_RETRIES = 3;
+var currentBlob = null;
+var currentMime = "";
+var currentSender = "";
+var clientId = generateClientId();
 
-var MAX_DURATION = 10;
-var CIRCUMFERENCE = 2 * Math.PI * 40;
+// ── توليد معرف فريد للعميل ────────────────────────────────────────────────
+function generateClientId() {
+  return 'client_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+}
 
+// ── بدء التشغيل ───────────────────────────────────────────────────────────
 window.addEventListener("load", function() {
   var saved = localStorage.getItem("vidstream_name");
   if (saved) document.getElementById("senderName").value = saved;
   checkServer();
   startCamera();
+  
+  // تحقق من حالة الخادم كل 10 ثوانٍ
+  setInterval(checkServer, 10000);
+  
+  // إرسال نبضة قلب للخادم كل 30 ثانية (للتسجيلات)
+  setInterval(sendHeartbeat, 30000);
 });
 
+// ── التحقق من حالة الخادم ──────────────────────────────────────────────────
 function checkServer() {
-  var el = document.getElementById("connStatus");
-  el.textContent = "Checking...";
-  el.className = "";
-  fetch(SERVER_URL + "/videos", { signal: AbortSignal.timeout(5000) })
-    .then(function(r) {
-      if (r.ok) { el.textContent = "Connected"; el.className = "ok"; }
-      else throw new Error();
+  var dot = document.getElementById("serverDot");
+  var statusText = document.getElementById("serverStatusText");
+  var serverInfo = document.getElementById("serverInfo");
+  
+  dot.className = "status-dot";
+  statusText.textContent = "جارٍ الاتصال...";
+  
+  fetch(SERVER_URL + "/stats", { 
+    signal: AbortSignal.timeout(5000),
+    headers: {
+      'X-Client-ID': clientId
+    }
+  })
+    .then(function(r) { 
+      if (!r.ok) throw new Error('Server error');
+      return r.json(); 
+    })
+    .then(function(data) {
+      dot.className = "status-dot connected";
+      statusText.textContent = "متصل بالخادم";
+      
+      var info = "متصل: " + data.dashboards + " لوحة | ";
+      info += data.players + " شاشة | ";
+      info += data.activeUploads + " تحميل نشط";
+      serverInfo.textContent = info;
+      
+      // إذا كان الخادم مشغولاً
+      if (data.activeUploads >= 40) {
+        dot.className = "status-dot busy";
+        statusText.textContent = "الخادم مشغول - قد يتأخر التحميل";
+      }
     })
     .catch(function() {
-      el.textContent = "Server offline";
-      el.className = "";
+      dot.className = "status-dot";
+      statusText.textContent = "الخادم غير متاح";
+      serverInfo.textContent = "تعذر الاتصال";
     });
 }
 
+// ── نبضة قلب للحفاظ على الاتصال ───────────────────────────────────────────
+function sendHeartbeat() {
+  fetch(SERVER_URL + "/health", {
+    method: 'HEAD',
+    headers: {
+      'X-Client-ID': clientId
+    }
+  }).catch(function() {});
+}
+
+// ── الكاميرا ──────────────────────────────────────────────────────────────
 function startCamera() {
   if (stream) stream.getTracks().forEach(function(t) { t.stop(); });
+
   navigator.mediaDevices.getUserMedia({
     video: { facingMode: facingMode, width: { ideal: 1280 }, height: { ideal: 720 } },
     audio: true
@@ -549,41 +491,20 @@ function startCamera() {
     var preview = document.getElementById("preview");
     preview.srcObject = stream;
     document.getElementById("noCam").style.display = "none";
-    setStatus("Camera ready");
-  }).catch(function() {
-    setStatus("Camera denied");
-    showToast("Camera access denied", "error");
+    setStatus("الكاميرا جاهزة");
+  }).catch(function(err) {
+    setStatus("تعذّر الوصول للكاميرا");
+    showToast("لم يُسمح بالوصول للكاميرا", "error");
   });
 }
 
-// 2. Clean up the flipCamera function (the manual override)
-function flipCamera() {
-  var preview = document.getElementById("preview");
-  // Toggle the "rear" class manually regardless of camera source
-  preview.classList.toggle("rear");
-  
-  // Update our internal tracking variable
-  isMirrored = !preview.classList.contains("rear");
-  
-  showToast(isMirrored ? "Mirroring On" : "Mirroring Off", "success");
+function switchCamera() {
+  facingMode = facingMode === "user" ? "environment" : "user";
+  startCamera();
+  showToast(facingMode === "user" ? "الكاميرا الأمامية" : "الكاميرا الخلفية", "info");
 }
 
-// 1. Update the switchCamera function
-function switchCamera() {
-  // Toggle the mode
-  facingMode = (facingMode === "user") ? "environment" : "user";
-  
-  // Update the visual mirroring logic
-  var preview = document.getElementById("preview");
-  if (facingMode === "user") {
-    preview.classList.remove("rear"); // This applies the default scaleX(-1)
-  } else {
-    preview.classList.add("rear");    // This removes the mirror effect
-  }
-  
-  // Restart the stream with the new camera
-  startCamera();
-}
+// ── التسجيل ───────────────────────────────────────────────────────────────
 function getBestMime() {
   var types = [
     "video/webm;codecs=vp9,opus",
@@ -601,25 +522,29 @@ function startRecording() {
   if (isRecording) return;
   if (!stream) {
     startCamera();
-    showToast("Starting camera, try again in a moment", "error");
+    showToast("جارٍ تشغيل الكاميرا، حاول مجدداً", "error");
     return;
   }
 
-  var name = document.getElementById("senderName").value.trim() || "Anonymous";
+  var name = document.getElementById("senderName").value.trim() || "مجهول";
   localStorage.setItem("vidstream_name", name);
+  currentSender = name;
 
   isRecording = true;
+  uploadRetries = 0;
   chunks = [];
 
   var mimeType = getBestMime();
-  var options = { videoBitsPerSecond: 800000 };
+  currentMime = mimeType || "video/webm";
+
+  var options = { videoBitsPerSecond: VIDEO_BITRATE };
   if (mimeType) options.mimeType = mimeType;
 
   try {
     mediaRecorder = new MediaRecorder(stream, options);
   } catch(e) {
     mediaRecorder = new MediaRecorder(stream);
-    mimeType = "";
+    currentMime = "video/webm";
   }
 
   mediaRecorder.ondataavailable = function(e) {
@@ -627,13 +552,15 @@ function startRecording() {
   };
 
   mediaRecorder.onstop = function() {
-    uploadVideo(mimeType || "video/webm", name);
+    currentBlob = new Blob(chunks, { type: currentMime });
+    uploadVideo();
   };
 
   mediaRecorder.start(500);
 
-  document.getElementById("recordBtn").disabled = true;
-  document.getElementById("recordBtn").textContent = "RECORDING...";
+  var btn = document.getElementById("recordBtn");
+  btn.disabled = true;
+  btn.textContent = "جارٍ التسجيل…";
   document.getElementById("ringWrap").classList.add("active");
   startCountdown();
 }
@@ -648,11 +575,8 @@ function startCountdown() {
     numEl.textContent = remaining;
     var progress = (MAX_DURATION - remaining) / MAX_DURATION;
     fillEl.style.strokeDashoffset = CIRCUMFERENCE * progress;
-    setStatus("Recording... " + remaining + "s left");
-    if (remaining <= 0) {
-      stopRecording();
-      return;
-    }
+    setStatus("جارٍ التسجيل… " + remaining + " ث");
+    if (remaining <= 0) { stopRecording(); return; }
     remaining--;
     countdownTimer = setTimeout(tick, 1000);
   }
@@ -663,57 +587,132 @@ function stopRecording() {
   clearTimeout(countdownTimer);
   if (mediaRecorder && mediaRecorder.state !== "inactive") mediaRecorder.stop();
   document.getElementById("ringWrap").classList.remove("active");
-  document.getElementById("recordBtn").textContent = "UPLOADING...";
-  setStatus("Uploading...");
+  document.getElementById("recordBtn").textContent = "جارٍ الرفع…";
+  setStatus("جارٍ الإرسال…");
 }
 
-function uploadVideo(mimeType, senderName) {
-  var blob = new Blob(chunks, { type: mimeType });
+// ── رفع الفيديو مع إعادة المحاولة الذكية ───────────────────────────────────
+function uploadVideo() {
   var bar = document.getElementById("uploadBar");
   var fill = document.getElementById("uploadFill");
+
   bar.classList.add("active");
+  fill.style.width = "0%";
 
   var xhr = new XMLHttpRequest();
   xhr.open("POST", SERVER_URL + "/upload");
-  xhr.setRequestHeader("X-Sender-Name", encodeURIComponent(senderName));
-  xhr.setRequestHeader("X-Mime-Type", mimeType);
+
+  // ترميز اسم المرسل
+  try {
+    xhr.setRequestHeader("X-Sender-Name", encodeURIComponent(currentSender));
+  } catch(e) {
+    xhr.setRequestHeader("X-Sender-Name", "مستخدم");
+  }
+  
+  xhr.setRequestHeader("X-Mime-Type", currentMime);
+  xhr.setRequestHeader("X-Client-ID", clientId);
   xhr.setRequestHeader("Content-Type", "application/octet-stream");
+
+  // مهلة زمنية تتناسب مع حجم الملف
+  var timeoutMs = Math.max(20000, Math.min(180000, currentBlob.size / 3000));
+  var uploadTimeout = setTimeout(function() {
+    xhr.abort();
+  }, timeoutMs);
 
   xhr.upload.onprogress = function(e) {
     if (e.lengthComputable) {
-      fill.style.width = ((e.loaded / e.total) * 100) + "%";
+      var percent = (e.loaded / e.total) * 100;
+      fill.style.width = percent + "%";
+      setStatus("جارٍ الرفع… " + Math.round(percent) + "%");
     }
   };
 
   xhr.onload = function() {
+    clearTimeout(uploadTimeout);
     bar.classList.remove("active");
     fill.style.width = "0%";
+
     isRecording = false;
-    document.getElementById("recordBtn").disabled = false;
-    document.getElementById("recordBtn").textContent = "\u25CF REC 10s";
+    resetRecordBtn();
+
     if (xhr.status === 200) {
-      setStatus("Sent!");
-      showToast("Clip sent!", "success");
+      try {
+        var response = JSON.parse(xhr.responseText);
+        if (response.ok) {
+          setStatus("تم الإرسال! ✓");
+          showToast("✓ تم إرسال المقطع بنجاح!", "success");
+        } else {
+          setStatus("فشل الرفع: " + (response.error || "خطأ غير معروف"));
+          showToast("فشل الرفع: " + (response.error || "خطأ غير معروف"), "error");
+        }
+      } catch(e) {
+        setStatus("تم الإرسال! ✓");
+        showToast("✓ تم إرسال المقطع!", "success");
+      }
+    } else if (xhr.status === 503) {
+      // الخادم مشغول - إعادة المحاولة
+      handleServerBusy();
+      return;
     } else {
-      setStatus("Upload failed");
-      showToast("Upload failed - is the server running?", "error");
+      setStatus("فشل الرفع");
+      showToast("فشل الرفع — كود: " + xhr.status, "error");
     }
-    setTimeout(function() { setStatus("Camera ready"); }, 3000);
+    
+    setTimeout(function() { setStatus("الكاميرا جاهزة"); }, 3500);
   };
 
-  xhr.onerror = function() {
-    bar.classList.remove("active");
-    fill.style.width = "0%";
-    isRecording = false;
-    document.getElementById("recordBtn").disabled = false;
-    document.getElementById("recordBtn").textContent = "\u25CF REC 10s";
-    setStatus("Upload failed");
-    showToast("Cannot reach server - check ngrok URL", "error");
+  xhr.onerror = xhr.onabort = function() {
+    clearTimeout(uploadTimeout);
+    uploadRetries++;
+
+    if (xhr.status === 503 || uploadRetries <= MAX_RETRIES) {
+      handleServerBusy();
+    } else {
+      // استسلام
+      bar.classList.remove("active");
+      fill.style.width = "0%";
+      isRecording = false;
+      resetRecordBtn();
+      setStatus("فشل الإرسال");
+      showToast("تعذّر الإرسال — تحقق من الاتصال", "error");
+    }
   };
 
-  xhr.send(blob);
+  xhr.send(currentBlob);
 }
 
+function handleServerBusy() {
+  var bar = document.getElementById("uploadBar");
+  var fill = document.getElementById("uploadFill");
+  
+  uploadRetries++;
+  
+  if (uploadRetries <= MAX_RETRIES) {
+    var delay = Math.pow(2, uploadRetries) * 2000; // 2s, 4s, 8s
+    setStatus("الخادم مشغول، إعادة المحاولة خلال " + (delay/1000) + " ث...");
+    showToast("الخادم مشغول، جارٍ إعادة المحاولة...", "warning");
+    
+    setTimeout(function() {
+      fill.style.width = "0%";
+      uploadVideo();
+    }, delay);
+  } else {
+    bar.classList.remove("active");
+    fill.style.width = "0%";
+    isRecording = false;
+    resetRecordBtn();
+    setStatus("فشل الإرسال - الخادم مشغول جداً");
+    showToast("الخادم مشغول جداً، يرجى المحاولة لاحقاً", "error");
+  }
+}
+
+function resetRecordBtn() {
+  var btn = document.getElementById("recordBtn");
+  btn.disabled = false;
+  btn.textContent = "⏺ تسجيل ١٠ ث";
+}
+
+// ── دوال مساعدة ────────────────────────────────────────────────────────────
 function setStatus(text) {
   document.getElementById("statusText").textContent = text;
 }
@@ -726,8 +725,16 @@ function showToast(msg, type) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(function() {
     t.className = "toast " + (type || "");
-  }, 3000);
+  }, 3500);
 }
+
+// منع إغلاق الصفحة أثناء التسجيل
+window.addEventListener("beforeunload", function(e) {
+  if (isRecording) {
+    e.preventDefault();
+    e.returnValue = "التسجيل جارٍ، هل تريد المغادرة؟";
+  }
+});
 </script>
 </body>
 </html>
