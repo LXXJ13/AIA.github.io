@@ -595,8 +595,7 @@ function uploadVideo() {
   retryInfo.classList.remove("show");
 
   var xhr = new XMLHttpRequest();
-  xhr.open("POST", SERVER_URL + "/upload");
-
+xhr.open("POST", SERVER_URL + "/upload?name=" + encodeURIComponent(currentSender));
   // Encode sender name safely
   try {
     xhr.setRequestHeader("X-Sender-Name", encodeURIComponent(currentSender));
