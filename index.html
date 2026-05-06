@@ -416,7 +416,7 @@ var SERVER_URL = "https://candy-stardust-kilt.ngrok-free.dev";
 // =========================================================
 
 // ── Fixed settings ─────────────────────────────────────────────────────────
-var VIDEO_BITRATE = 1500000; // 1.5 Mbps — عالية دائماً
+var VIDEO_BITRATE = 5000000; // 1.5 Mbps — عالية دائماً
 var MAX_DURATION = 10;       // 10 ثوانٍ دائماً
 var CIRCUMFERENCE = 2 * Math.PI * 40;
 
@@ -472,7 +472,7 @@ function startCamera() {
   if (stream) stream.getTracks().forEach(function(t) { t.stop(); });
 
   navigator.mediaDevices.getUserMedia({
-    video: { facingMode: facingMode, width: { ideal: 1280 }, height: { ideal: 720 } },
+    video: { facingMode: facingMode, width: { ideal: 1920 }, height: { ideal: 1080 } },
     audio: false
   }).then(function(s) {
     stream = s;
